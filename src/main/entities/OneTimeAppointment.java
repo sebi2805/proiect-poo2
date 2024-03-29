@@ -1,11 +1,12 @@
 package main.entities;
 
+import main.entities.enums.AppointmentStatus;
 import java.time.LocalDateTime;
 
 public class OneTimeAppointment extends Appointment {
     // Constructor
-    public OneTimeAppointment(String ID, String clientID, String medicID, LocalDateTime appointmentDate, String status) {
-        super(ID, clientID, medicID, appointmentDate, status);
+    public OneTimeAppointment(String ID, Client client, Medic medic, LocalDateTime appointmentDate, AppointmentStatus status) {
+        super(ID, client, medic, appointmentDate, status);
     }
 
     // Implementing abstract methods from Appointment
