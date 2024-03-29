@@ -2,8 +2,8 @@ package main.entities;
 
 import java.time.LocalDateTime;
 
-import main.entities.enums.AppointmentFrequency;
-import main.entities.enums.AppointmentStatus;
+import main.enums.AppointmentFrequency;
+import main.enums.AppointmentStatus;
 
 public class RegularAppointment extends Appointment {
     private AppointmentFrequency frequency; // Use enum type

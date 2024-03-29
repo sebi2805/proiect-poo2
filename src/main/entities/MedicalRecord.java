@@ -1,5 +1,7 @@
 package main.entities;
 
+import main.exceptions.FutureDateException;
+
 import java.time.LocalDate;
 
 public class MedicalRecord {
@@ -9,10 +11,11 @@ public class MedicalRecord {
     private String notes;
 
     // Constructor
-    public MedicalRecord(String recordID, String clientID, LocalDate visitDate, String notes) {
+    public MedicalRecord(String recordID, String clientID, LocalDate visitDate, String notes)
+            throws FutureDateException {
         this.recordID = recordID;
         this.clientID = clientID;
-        this.visitDate = visitDate;
+        setVisitDate(visitDate);
         this.notes = notes;
     }
 
@@ -37,7 +40,10 @@ public class MedicalRecord {
         return visitDate;
     }
 
-    public void setVisitDate(LocalDate visitDate) {
+    public void setVisitDate(LocalDate visitDate) throws FutureDateException {
+        if(visitDate.isAfter(LocalDate.now())) {
+            throw new FutureDateException("The visit date cannot be in the future.");
+        }
         this.visitDate = visitDate;
     }
 

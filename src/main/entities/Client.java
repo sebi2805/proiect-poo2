@@ -46,7 +46,7 @@ public class Client extends Person {
     // Implementing the abstract method from Person class
     @Override
     public void displayDetails() {
-        System.out.println("Client ID: " + getID());
+        System.out.println("Client ID: " + getId());
         System.out.println("Name: " + getName());
         System.out.println("Phone: " + getPhone());
         System.out.println("Email: " + getEmail());

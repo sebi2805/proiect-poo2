@@ -1,6 +1,6 @@
 package main.entities;
 
-import main.entities.enums.MedicalSpecialty;
+import main.enums.MedicalSpecialty;
 import main.exceptions.InvalidEmailFormatException;
 import main.exceptions.InvalidPhoneNumberException;
 
@@ -59,7 +59,7 @@ public class Medic extends Person {
     // Implementing the abstract method from Person class
     @Override
     public void displayDetails() {
-        System.out.println("Medic ID: " + getID());
+        System.out.println("Medic ID: " + getId());
         System.out.println("Name: " + getName());
         System.out.println("Phone: " + getPhone());
         System.out.println("Email: " + getEmail());
@@ -67,7 +67,7 @@ public class Medic extends Person {
         System.out.println("Available Hours: " + availableHours);
         // Optionally display the appointment details
         for (Appointment appointment : appointments) {
-            System.out.println("Appointment ID: " + appointment.getID());
+            System.out.println("Appointment ID: " + appointment.getId());
             // More details can be printed out here if needed
         }
     }

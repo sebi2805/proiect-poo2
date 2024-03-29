@@ -1,6 +1,6 @@
 package main.entities;
 
-import main.entities.enums.MedicalSpecialty;
+import main.enums.MedicalSpecialty;
 import main.exceptions.InvalidEmailFormatException;
 import main.exceptions.InvalidPhoneNumberException;
 

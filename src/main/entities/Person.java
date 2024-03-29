@@ -3,8 +3,9 @@ package main.entities;
 import main.exceptions.InvalidEmailFormatException;
 import main.exceptions.InvalidPhoneNumberException;
 
-public abstract class Person {
-    protected String ID;
+import javax.swing.text.html.parser.Entity;
+
+public abstract class Person extends BaseEntity {
     protected String name;
     protected String phone;
     protected String email;
@@ -12,17 +13,13 @@ public abstract class Person {
     // Constructor
     public Person(String ID, String name, String phone, String email)
             throws InvalidPhoneNumberException, InvalidEmailFormatException {
-        this.ID = ID;
+        super(ID);
         this.name = name;
         setPhone(phone); // Use setter to validate, might throw InvalidPhoneNumberException
         setEmail(email); // Use setter to validate, might throw InvalidEmailFormatException
     }
 
     // Getters
-    public String getID() {
-        return ID;
-    }
-
     public String getName() {
         return name;
     }
@@ -36,10 +33,6 @@ public abstract class Person {
     }
 
     // Setters
-    public void setID(String ID) {
-        this.ID = ID;
-    }
-
     public void setName(String name) {
         this.name = name;
     }

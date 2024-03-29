@@ -1,6 +1,6 @@
 package main.entities;
 
-import main.entities.enums.AppointmentStatus;
+import main.enums.AppointmentStatus;
 import java.time.LocalDateTime;
 
 public class OneTimeAppointment extends Appointment {
