@@ -5,8 +5,6 @@ import main.exceptions.InvalidEmailFormatException;
 import main.exceptions.InvalidPhoneNumberException;
 
 public class GeneralPractitioner extends Medic {
-    // If there are no new attributes unique to GeneralPractitioner, no additional fields are needed
-
     // Constructor
     public GeneralPractitioner(String ID, String name, String phone, String email, String availableHours)
             throws InvalidPhoneNumberException, InvalidEmailFormatException {

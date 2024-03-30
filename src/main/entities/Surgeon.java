@@ -5,8 +5,6 @@ import main.exceptions.InvalidEmailFormatException;
 import main.exceptions.InvalidPhoneNumberException;
 
 public class Surgeon extends Medic {
-    // If there are no new attributes, we don't need to add additional fields here
-
     // Constructor
     public Surgeon(String ID, String name, String phone, String email, String availableHours)  throws InvalidPhoneNumberException, InvalidEmailFormatException {
         super(ID, name, phone, email, MedicalSpecialty.SURGEON, availableHours); // Assuming "Surgery" as the fixed specialty for all Surgeons

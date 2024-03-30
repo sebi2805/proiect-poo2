@@ -11,7 +11,6 @@ public abstract class BaseEntity {
     // Constructor
     public BaseEntity(String id) {
         this.id = id;
-        this.createdAt = LocalDateTime.now(); // Initialize createdAt to the current time
         // updatedAt and deletedAt are not initialized until the entity is updated or deleted
     }
 
@@ -23,11 +22,12 @@ public abstract class BaseEntity {
     public void setId(String id) {
         this.id = id;
     }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-
+    public void setCreatedAt(LocalDateTime createdAt){
+        this.createdAt=createdAt;
+    }
     // createdAt does not have a setter, as it should be set once upon creation
 
     public LocalDateTime getUpdatedAt() {

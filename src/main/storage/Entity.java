@@ -8,12 +8,15 @@ import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import main.entities.BaseEntity;
+import main.exceptions.AlreadyExistsException;
+import main.exceptions.NotFoundException;
 
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +27,7 @@ public class Entity<T extends BaseEntity> {
     private static final String BASE_PATH = "data/csv/directory/";
     private final String csvFilePath;
     private List<T> entities;
-    private Class<T> entityClass;
+    private final Class<T> entityClass;
     private Map<String, T> entitiesMap;
 
     public Entity(String className, Class<T> entityClass) {
@@ -74,28 +77,45 @@ public class Entity<T extends BaseEntity> {
         return Optional.ofNullable(entitiesMap.get(id));
     }
     // Add a new object to the in-memory list and save to CSV
-    public void add(T entity) {
-        entities.add(entity);
-        saveToCSV();
+    public void add(T entity) throws AlreadyExistsException {
+        if(findById(entity.getId()).isEmpty()) {
+            entity.setCreatedAt(LocalDateTime.now());
+            entities.add(entity);
+            saveToCSV();
+        } else {
+            throw new AlreadyExistsException("Entity already exists with this id");
+        }
     }
 
 
     // Update an existing object and save changes to CSV
-    public void update(T updatedEntity) {
+    public void update(T updatedEntity) throws NotFoundException {
+        boolean found = false;
         for (int i = 0; i < entities.size(); i++) {
             T entity = entities.get(i);
             if (entity.getId().equals(updatedEntity.getId())) {
+                updatedEntity.setCreatedAt(LocalDateTime.now());
                 entities.set(i, updatedEntity);
+                found = true;
+                entitiesMap.put(entity.getId(), entity);
                 break;
             }
         }
-        saveToCSV();
+        if(found){
+            saveToCSV();
+        } else { throw new NotFoundException("The entity does not exists");}
     }
 
     // Delete an object and save changes to CSV
-    public void delete(T entityToRemove) {
-        entities.removeIf(entity -> entity.getId().equals(entityToRemove.getId()));
-        saveToCSV();
+    public void delete(String entityId) throws NotFoundException {
+        boolean found = entities.removeIf(entity -> entity.getId().equals(entityId));
+        if (found) {
+            // Also update the map if you maintain entities in both a list and a map
+            entitiesMap.remove(entityId);
+            saveToCSV();
+        } else {
+            throw new NotFoundException("Entity with ID " + entityId + " does not exist.");
+        }
     }
 
     // Retrieve all objects
