@@ -54,4 +54,7 @@ public abstract class BaseEntity {
     public void markDeleted() {
         setDeletedAt(LocalDateTime.now());
     }
+    public String getEntityTypeName() {
+        return this.getClass().getSimpleName();
+    }
 }

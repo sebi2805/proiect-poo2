@@ -4,30 +4,21 @@ import main.exceptions.FutureDateException;
 
 import java.time.LocalDate;
 
-public class MedicalRecord {
-    private String recordID;
+public class MedicalRecord extends BaseEntity {
     private String clientID;
     private LocalDate visitDate;
     private String notes;
 
     // Constructor
-    public MedicalRecord(String recordID, String clientID, LocalDate visitDate, String notes)
+    public MedicalRecord(String ID, String clientID, LocalDate visitDate, String notes)
             throws FutureDateException {
-        this.recordID = recordID;
+        super(ID);
         this.clientID = clientID;
         setVisitDate(visitDate);
         this.notes = notes;
     }
 
     // Getters and Setters
-    public String getRecordID() {
-        return recordID;
-    }
-
-    public void setRecordID(String recordID) {
-        this.recordID = recordID;
-    }
-
     public String getClientID() {
         return clientID;
     }
@@ -57,7 +48,7 @@ public class MedicalRecord {
 
     // Method to display the details of the medical record
     public void displayDetails() {
-        System.out.println("Medical Record ID: " + recordID);
+        System.out.println("Medical Record ID: " + getId());
         System.out.println("Client ID: " + clientID);
         System.out.println("Visit Date: " + visitDate);
         System.out.println("Notes: " + notes);
