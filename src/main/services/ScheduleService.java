@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+// TODO MAKE IT SINGLETON
 public class ScheduleService {
     private final FileService fileService = FileService.getInstance();
 
