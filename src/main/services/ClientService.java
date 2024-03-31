@@ -4,8 +4,11 @@ import main.entities.Client;
 import main.exceptions.AlreadyExistsException;
 import main.exceptions.NotFoundException;
 import main.storage.FileService;
+import main.util.SearchCriteriaPerson;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ClientService {
 
@@ -55,6 +58,19 @@ public class ClientService {
             System.err.println("Client with ID " + clientId + " not found.");
             // Handle the case where the client doesn't exist as needed
         }
+    }
+    public List<Client> searchClients(SearchCriteriaPerson criteria) {
+        return fileService.getClientManager().findAll().stream()
+                .filter(client -> matchesCriteria(client, criteria))
+                .collect(Collectors.toList());
+    }
+
+    private boolean matchesCriteria(Client client, SearchCriteriaPerson criteria) {
+        boolean matchesName = criteria.getName() == null || client.getName().toLowerCase().contains(criteria.getName().toLowerCase());
+        boolean matchesEmail = criteria.getEmail() == null || client.getEmail().equalsIgnoreCase(criteria.getEmail().toLowerCase());
+        boolean matchesPhone = criteria.getPhone() == null || client.getPhone().equals(criteria.getPhone());
+
+        return matchesName && matchesEmail && matchesPhone;
     }
 
 }

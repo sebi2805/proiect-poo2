@@ -7,6 +7,10 @@ import main.enums.MedicalSpecialty;
 import main.exceptions.AlreadyExistsException;
 import main.exceptions.NotFoundException;
 import main.storage.FileService;
+import main.util.SearchCriteriaPerson;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class MedicService {
     private final FileService fileService = FileService.getInstance();
@@ -19,39 +23,32 @@ public class MedicService {
         return instance;
     }
 
-    //    TODO MAYBE REFACTOR IT A LITTLE BIT
     public void addMedic(Medic medic) throws AlreadyExistsException {
-        if(medic.getSpecialty()==MedicalSpecialty.SURGEON){
-            Surgeon surgeon = (Surgeon)medic;
-            surgeon.setSpecialty(medic.getSpecialty());
-            fileService.getSurgeonManager().add(surgeon);
-        } else if(medic.getSpecialty()==MedicalSpecialty.GENERAL_PRACTITIONER){
-            GeneralPractitioner generalPractitioner = (GeneralPractitioner)medic;
-            generalPractitioner.setSpecialty(medic.getSpecialty());
-            fileService.getGeneralPractitionerManager().add(generalPractitioner);
-        }
+        fileService.getMedicManager().add(medic);
     }
     public Medic getMedicById(String medicId){
-        Medic medic = fileService.getSurgeonManager().findById(medicId).orElse(null);
-        if(medic != null){
-            medic = fileService.getGeneralPractitionerManager().findById(medicId).orElse(null);
-        }
-        return medic;
+        return fileService.getMedicManager().findById(medicId).orElse(null);
     }
     public void UpdateMedic(Medic medic) throws NotFoundException {
-        if(medic.getSpecialty() == MedicalSpecialty.SURGEON){
-            fileService.getSurgeonManager().update((Surgeon)medic);
-        } else if(medic.getSpecialty() == MedicalSpecialty.GENERAL_PRACTITIONER){
-            fileService.getGeneralPractitionerManager().update((GeneralPractitioner)medic);
-        }
+            fileService.getMedicManager().update((Surgeon)medic);
     }
 
     public void Delete(Medic medic) throws NotFoundException {
-        if(medic.getSpecialty() == MedicalSpecialty.SURGEON){
-            fileService.getSurgeonManager().delete(medic.getId());
-        } else if(medic.getSpecialty() == MedicalSpecialty.GENERAL_PRACTITIONER){
-            fileService.getGeneralPractitionerManager().delete(medic.getId());
-        }
+        fileService.getMedicManager().delete(medic.getId());
+    }
+
+    public List<Medic> searchMedics(SearchCriteriaPerson criteria) {
+        return fileService.getMedicManager().findAll().stream()
+                .filter(medic -> matchesCriteria(medic, criteria))
+                .collect(Collectors.toList());
+    }
+
+    private boolean matchesCriteria(Medic medic, SearchCriteriaPerson criteria) {
+        boolean matchesName = criteria.getName() == null || medic.getName().toLowerCase().contains(criteria.getName().toLowerCase());
+        boolean matchesEmail = criteria.getEmail() == null || medic.getEmail().toLowerCase().equals(criteria.getEmail().toLowerCase());
+        boolean matchesPhone = criteria.getPhone() == null || medic.getPhone().equals(criteria.getPhone());
+
+        return matchesName && matchesEmail && matchesPhone;
     }
 
 }
