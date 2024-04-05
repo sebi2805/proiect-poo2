@@ -13,10 +13,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-// TODO MAKE IT SINGLETON
 public class ScheduleService {
+    private static ScheduleService instance;
     private final FileService fileService = FileService.getInstance();
-
+    private ScheduleService(){}
+    public synchronized static ScheduleService getInstance(){
+        if(instance==null){
+            instance = new ScheduleService();
+        }
+        return instance;
+    }
     private boolean overlapsWithRegularAppointment(LocalDateTime appointmentStart, List<RegularAppointment> regularAppointments) {
         for (RegularAppointment regularAppointment : regularAppointments) {
             LocalDateTime appointmentDate = regularAppointment.getAppointmentDate();

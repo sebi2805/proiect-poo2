@@ -7,14 +7,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Client extends Person {
-    private List<String> medicalHistory;
-    private List<Appointment> appointments; // List to keep track of appointments
+    private List<String> medicalHistory;;
+    private List<Appointment> appointments;; // List to keep track of appointments
 
     // Constructor
     public Client(String ID, String name, String phone, String email, List<String> medicalHistory)
             throws InvalidPhoneNumberException, InvalidEmailFormatException {
         super(ID, name, phone, email); // Call to the superclass (Person) constructor
         this.medicalHistory = new ArrayList<>(medicalHistory); // Initialize medical history with a copy of the provided list
+    }
+    public Client(String ID, String name, String phone, String email)
+            throws InvalidPhoneNumberException, InvalidEmailFormatException {
+        super(ID, name, phone, email); // Call to the superclass (Person) constructor
+        this.medicalHistory = new ArrayList<>();
+        this.appointments = new ArrayList<>();
+    }
+    public Client() {
+        super(); // Apelează constructorul clasei de bază, dacă este necesar
+        this.medicalHistory = new ArrayList<>();
+        this.appointments = new ArrayList<>();
     }
 
     // Getters and Setters

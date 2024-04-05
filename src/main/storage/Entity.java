@@ -17,14 +17,11 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 public class Entity<T extends BaseEntity> {
-    private static final String BASE_PATH = "data/csv/directory/";
+    private static final String BASE_PATH = "data/csv/";
     private final String csvFilePath;
     private List<T> entities;
     private final Class<T> entityClass;
@@ -34,6 +31,7 @@ public class Entity<T extends BaseEntity> {
         this.entityClass = entityClass;
         this.csvFilePath = BASE_PATH + className + ".csv";
         this.entities = new ArrayList<>();
+        this.entitiesMap = new HashMap<>();
         loadFromCSV();
     }
 
@@ -41,20 +39,24 @@ public class Entity<T extends BaseEntity> {
     private void loadFromCSV() {
         try (Reader reader = new FileReader(csvFilePath)) {
             ColumnPositionMappingStrategy<T> strategy = new ColumnPositionMappingStrategy<>();
-            strategy.setType(entityClass); // Assuming you keep a reference to entityClass
+            strategy.setType(entityClass); // Asigură-te că aceasta corespunde structurii clasei T
 
             CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(reader)
                     .withMappingStrategy(strategy)
                     .build();
 
-            entities = new ArrayList<>(csvToBean.parse());
-            for( T entity : entities) {
-                entitiesMap.put(entity.getId(), entity);
-                }
+            entities = new ArrayList<>(); // Asigură-te că lista este curățată sau reinițializată aici
+            entitiesMap = new HashMap<>(); // De asemenea, reinițializează map-ul, dacă este utilizat
+
+            for (T entity : csvToBean.parse()) {
+                entities.add(entity);
+                entitiesMap.put(entity.getId(), entity); // Atenție la ID-uri duplicate
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
     // Save objects from the entities list back into the CSV file
     public void saveToCSV() {
         try (Writer writer = new FileWriter(csvFilePath)) {

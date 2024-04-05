@@ -11,6 +11,12 @@ public abstract class Person extends BaseEntity {
     protected String email;
 
     // Constructor
+    public Person() {
+        super(); // Apelează constructorul clasei de bază, dacă este necesar
+        this.name = ""; // Inițializează cu un șir gol sau altă valoare implicată
+        this.phone = ""; // Poți folosi valori implicite care sunt sigure
+        this.email = ""; // Evită erorile de validare pentru valori nule
+    }
     public Person(String ID, String name, String phone, String email)
             throws InvalidPhoneNumberException, InvalidEmailFormatException {
         super(ID);

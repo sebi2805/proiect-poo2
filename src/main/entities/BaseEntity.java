@@ -1,6 +1,7 @@
 package main.entities;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public abstract class BaseEntity {
     protected String id;
@@ -12,6 +13,10 @@ public abstract class BaseEntity {
     public BaseEntity(String id) {
         this.id = id;
         // updatedAt and deletedAt are not initialized until the entity is updated or deleted
+    }
+    public BaseEntity() {
+        this.id = UUID.randomUUID().toString(); // Generează și atribuie un ID unic
+        // updatedAt și deletedAt nu sunt inițializate până când entitatea nu este actualizată sau ștearsă
     }
 
     // Getters and Setters
