@@ -6,6 +6,7 @@ public class ServiceManager {
     private static final AppointmentService appointmentService = AppointmentService.getInstance();
     private static final MedicService medicService = MedicService.getInstance();
     private static final ScheduleService scheduleService = ScheduleService.getInstance();
+    private static final MedicalRecordService medicalRecordService = MedicalRecordService.getInstance();
 
     private static ServiceManager instance;
     private ServiceManager() {}
@@ -18,10 +19,11 @@ public class ServiceManager {
     public static ClientService getClientService() {
         return clientService;
     }
-
-    public static AppointmentService getAppointmentService() {
-        return appointmentService;
+    public static MedicalRecordService getMedicalRecordService() {
+        return medicalRecordService;
     }
+
+    public static AppointmentService getAppointmentService() { return appointmentService; }
     public static MedicService getMedicService() {
         return medicService;
     }

@@ -1,12 +1,22 @@
 package main.entities;
 
+import com.opencsv.bean.CsvBindByPosition;
+import com.opencsv.bean.CsvDate;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public abstract class BaseEntity {
+    @CsvBindByPosition(position = 0)
     protected String id;
+    @CsvBindByPosition(position = 1)
+    @CsvDate("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS")
     protected LocalDateTime createdAt;
+    @CsvBindByPosition(position = 2)
+    @CsvDate("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS")
     protected LocalDateTime updatedAt;
+    @CsvBindByPosition(position = 3)
+    @CsvDate("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS")
     protected LocalDateTime deletedAt;
 
     // Constructor
@@ -16,7 +26,7 @@ public abstract class BaseEntity {
     }
     public BaseEntity() {
         this.id = UUID.randomUUID().toString(); // Generează și atribuie un ID unic
-        // updatedAt și deletedAt nu sunt inițializate până când entitatea nu este actualizată sau ștearsă
+        System.out.println("id generat random");
     }
 
     // Getters and Setters

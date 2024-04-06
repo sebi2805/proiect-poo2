@@ -1,13 +1,17 @@
 package main.entities;
 
+import com.opencsv.bean.CsvBindByPosition;
 import main.exceptions.InvalidEmailFormatException;
 import main.exceptions.InvalidPhoneNumberException;
 
 import javax.swing.text.html.parser.Entity;
 
 public abstract class Person extends BaseEntity {
+    @CsvBindByPosition(position = 4)
     protected String name;
+    @CsvBindByPosition(position = 5)
     protected String phone;
+    @CsvBindByPosition(position = 6)
     protected String email;
 
     // Constructor

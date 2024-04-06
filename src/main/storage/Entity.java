@@ -16,6 +16,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.lang.reflect.Constructor;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -57,6 +58,7 @@ public class Entity<T extends BaseEntity> {
         }
     }
 
+
     // Save objects from the entities list back into the CSV file
     public void saveToCSV() {
         try (Writer writer = new FileWriter(csvFilePath)) {
@@ -66,7 +68,6 @@ public class Entity<T extends BaseEntity> {
             e.printStackTrace();
         }
     }
-    // Find an object by ID (if the object has an ID)
 //    public Optional<T> findById(String id) {
 //        for( T entity : entities){
 //            if(entity.getId().equals(id)){
@@ -78,7 +79,6 @@ public class Entity<T extends BaseEntity> {
     public Optional<T> findById(String id) {
         return Optional.ofNullable(entitiesMap.get(id));
     }
-    // Add a new object to the in-memory list and save to CSV
     public void add(T entity) throws AlreadyExistsException {
         if(findById(entity.getId()).isEmpty()) {
             entity.setCreatedAt(LocalDateTime.now());
@@ -90,7 +90,6 @@ public class Entity<T extends BaseEntity> {
     }
 
 
-    // Update an existing object and save changes to CSV
     public void update(T updatedEntity) throws NotFoundException {
         boolean found = false;
         for (int i = 0; i < entities.size(); i++) {
@@ -108,11 +107,9 @@ public class Entity<T extends BaseEntity> {
         } else { throw new NotFoundException("The entity does not exists");}
     }
 
-    // Delete an object and save changes to CSV
     public void delete(String entityId) throws NotFoundException {
         boolean found = entities.removeIf(entity -> entity.getId().equals(entityId));
         if (found) {
-            // Also update the map if you maintain entities in both a list and a map
             entitiesMap.remove(entityId);
             saveToCSV();
         } else {
@@ -120,7 +117,6 @@ public class Entity<T extends BaseEntity> {
         }
     }
 
-    // Retrieve all objects
     public List<T> findAll() {
         return new ArrayList<>(entities);
     }

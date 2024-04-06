@@ -1,12 +1,16 @@
 package main.entities;
 
+import com.opencsv.bean.CsvBindByPosition;
 import main.exceptions.FutureDateException;
 
 import java.time.LocalDate;
 
 public class MedicalRecord extends BaseEntity {
+    @CsvBindByPosition(position = 4)
     private String clientID;
+    @CsvBindByPosition(position = 5)
     private LocalDate visitDate;
+    @CsvBindByPosition(position = 6)
     private String notes;
 
     // Constructor
@@ -17,7 +21,9 @@ public class MedicalRecord extends BaseEntity {
         setVisitDate(visitDate);
         this.notes = notes;
     }
-
+    public MedicalRecord(){
+        super();
+    }
     // Getters and Setters
     public String getClientID() {
         return clientID;

@@ -1,6 +1,7 @@
 package main.services;
 
 import main.entities.Client;
+import main.entities.MedicalRecord;
 import main.exceptions.AlreadyExistsException;
 import main.exceptions.NotFoundException;
 import main.storage.FileService;
@@ -48,7 +49,6 @@ public class ClientService {
             fileService.getClientManager().update(client);
             System.out.println("Client successfully updated.");
     }
-
     public void deleteClient(String clientId) throws NotFoundException {
         Optional<Client> clientOptional = fileService.getClientManager().findById(clientId);
         if (clientOptional.isPresent()) {
@@ -56,7 +56,6 @@ public class ClientService {
             System.out.println("Client with ID " + clientId + " successfully deleted.");
         } else {
             System.err.println("Client with ID " + clientId + " not found.");
-            // Handle the case where the client doesn't exist as needed
         }
     }
     public List<Client> searchClients(SearchCriteriaPerson criteria) {
