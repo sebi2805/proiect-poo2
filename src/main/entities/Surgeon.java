@@ -9,8 +9,8 @@ import java.time.LocalTime;
 
 public class Surgeon extends Medic {
     // Constructor
-    public Surgeon(String ID, String name, String phone, String email, LocalTime workingHoursStart, LocalTime workingHoursEnd)  throws InvalidPhoneNumberException, InvalidEmailFormatException {
-        super(ID, name, phone, email, MedicalSpecialty.SURGEON, workingHoursStart, workingHoursEnd); // Assuming "Surgery" as the fixed specialty for all Surgeons
+    public Surgeon(String name, String phone, String email, LocalTime workingHoursStart, LocalTime workingHoursEnd)  throws InvalidPhoneNumberException, InvalidEmailFormatException {
+        super(name, phone, email, MedicalSpecialty.SURGEON, workingHoursStart, workingHoursEnd); // Assuming "Surgery" as the fixed specialty for all Surgeons
     }
 
     // Override the displayDetails method if we want to add or change the information displayed for Surgeons

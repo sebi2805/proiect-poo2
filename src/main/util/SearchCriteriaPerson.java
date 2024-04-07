@@ -11,6 +11,7 @@ public class SearchCriteriaPerson {
         this.email = email;
         this.phone = phone;
     }
+    public SearchCriteriaPerson() {}
 
 
     public String getName() {

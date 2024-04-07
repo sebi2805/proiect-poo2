@@ -16,10 +16,10 @@ public class Medic extends Person {
     private final List<Appointment> appointments; // List to track appointments
 
     // Constructor
-    public Medic(String ID, String name, String phone, String email, MedicalSpecialty specialty,
+    public Medic(String name, String phone, String email, MedicalSpecialty specialty,
                  LocalTime workingHoursStart, LocalTime workingHoursEnd)
             throws InvalidPhoneNumberException, InvalidEmailFormatException {
-        super(ID, name, phone, email); // Call to the superclass (Person) constructor
+        super(name, phone, email); // Call to the superclass (Person) constructor
         this.workingHoursStart = workingHoursStart;
         this.workingHoursEnd = workingHoursEnd;
         this.specialty = specialty;

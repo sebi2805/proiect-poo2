@@ -2,15 +2,18 @@ package main.entities;
 
 import java.time.LocalDateTime;
 
+import com.opencsv.bean.CsvBindByPosition;
 import main.enums.AppointmentFrequency;
 import main.enums.AppointmentStatus;
 
 public class RegularAppointment extends Appointment {
-    private AppointmentFrequency frequency; // Use enum type
+
+    @CsvBindByPosition(position = 8)
+    private AppointmentFrequency frequency;
 
     // Constructor
-    public RegularAppointment(String ID, Client client, Medic medic, LocalDateTime appointmentDate, AppointmentStatus status, AppointmentFrequency frequency) {
-        super(ID, client, medic, appointmentDate, status); // Pass enum for status
+    public RegularAppointment(Client client, Medic medic, LocalDateTime appointmentDate, AppointmentStatus status, AppointmentFrequency frequency) {
+        super(client, medic, appointmentDate, status);
         this.frequency = frequency;
     }
 

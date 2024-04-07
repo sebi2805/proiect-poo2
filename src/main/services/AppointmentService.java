@@ -15,12 +15,10 @@ public class AppointmentService {
     private static AppointmentService instance;
     private final FileService fileService;
 
-    // Private constructor to prevent instantiation
     private AppointmentService() {
         this.fileService = FileService.getInstance();
     }
 
-    // Public method to get the singleton instance
     public static synchronized AppointmentService getInstance() {
         if (instance == null) {
             instance = new AppointmentService();
@@ -28,7 +26,6 @@ public class AppointmentService {
         return instance;
     }
 
-    // Programarea unei noi întâlniri
     public Appointment scheduleAppointment(Appointment appointment) throws AlreadyExistsException {
         if (appointment instanceof OneTimeAppointment) {
             fileService.getOneTimeAppointmentManager().add((OneTimeAppointment) appointment);
@@ -38,7 +35,6 @@ public class AppointmentService {
         return appointment;
     }
 
-    // Actualizarea unei întâlniri existente
     public Appointment updateAppointment(Appointment updatedAppointment) throws NotFoundException {
         if (updatedAppointment instanceof OneTimeAppointment) {
             fileService.getOneTimeAppointmentManager().update((OneTimeAppointment) updatedAppointment);
@@ -48,9 +44,7 @@ public class AppointmentService {
         return updatedAppointment;
     }
 
-    // Anularea unei întâlniri
     public void cancelAppointment(String appointmentId) throws NotFoundException {
-        // Nota: Necesită modificare pentru a suporta ambele tipuri de întâlniri
         try {
             fileService.getOneTimeAppointmentManager().delete(appointmentId);
         } catch (NotFoundException e) {
@@ -58,7 +52,6 @@ public class AppointmentService {
         }
     }
 
-    // Găsirea tuturor programărilor pentru un client
     public List<Appointment> getAppointmentsForClient(String clientId) {
         List<Appointment> oneTimeAppointments = fileService.getOneTimeAppointmentManager().findAll().stream().filter(appointment -> appointment.getClient().getId().equals(clientId)).collect(Collectors.toList());
         List<Appointment> regularAppointments = fileService.getRegularAppointmentManager().findAll().stream().filter(appointment -> appointment.getClient().getId().equals(clientId)).collect(Collectors.toList());
@@ -66,7 +59,6 @@ public class AppointmentService {
         return oneTimeAppointments;
     }
 
-    // Găsirea tuturor programărilor pentru un medic
     public List<Appointment> getAppointmentsForMedic(String medicId) {
         List<Appointment> oneTimeAppointments = fileService.getOneTimeAppointmentManager().findAll().stream().filter(appointment -> appointment.getMedic().getId().equals(medicId)).collect(Collectors.toList());
         List<Appointment> regularAppointments = fileService.getRegularAppointmentManager().findAll().stream().filter(appointment -> appointment.getMedic().getId().equals(medicId)).collect(Collectors.toList());
@@ -74,7 +66,6 @@ public class AppointmentService {
         return oneTimeAppointments;
     }
 
-    // Găsirea unei întâlniri după ID
     public Appointment getAppointmentById(String appointmentId) throws NotFoundException {
         Appointment appointment;
         try {

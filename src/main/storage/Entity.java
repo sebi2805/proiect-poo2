@@ -36,11 +36,10 @@ public class Entity<T extends BaseEntity> {
         loadFromCSV();
     }
 
-    // Load objects from the CSV file into the entities list
     private void loadFromCSV() {
         try (Reader reader = new FileReader(csvFilePath)) {
             ColumnPositionMappingStrategy<T> strategy = new ColumnPositionMappingStrategy<>();
-            strategy.setType(entityClass); // Asigură-te că aceasta corespunde structurii clasei T
+            strategy.setType(entityClass);
 
             CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(reader)
                     .withMappingStrategy(strategy)
@@ -49,12 +48,18 @@ public class Entity<T extends BaseEntity> {
             entities = new ArrayList<>(); // Asigură-te că lista este curățată sau reinițializată aici
             entitiesMap = new HashMap<>(); // De asemenea, reinițializează map-ul, dacă este utilizat
 
+            System.out.println("load entities");
             for (T entity : csvToBean.parse()) {
                 entities.add(entity);
                 entitiesMap.put(entity.getId(), entity); // Atenție la ID-uri duplicate
             }
+            System.out.println(entities.size());
         } catch (IOException e) {
+
             e.printStackTrace();
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
         }
     }
 

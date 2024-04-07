@@ -15,13 +15,10 @@ public class Main {
         ServiceManager serviceManager = ServiceManager.getInstance();
 
         // Creăm un client hardcodat
-        Client newClient = new Client("1", "John Doe", "1234567890","john.doe@example.com");
-        MedicalRecord newMedicalRecord = new MedicalRecord("1", "1", LocalDate.now(), "");
+        MedicalRecord newMedicalRecord = new MedicalRecord( "1", "1", LocalDate.now(), "");
         try {
             // Adăugăm clientul în sistem
             serviceManager.getMedicalRecordService().addMedicalRecord(newMedicalRecord);
-            newClient.addMedicalRecord(newMedicalRecord);
-            serviceManager.getClientService().addClient(newClient);
             System.out.println("Clientul a fost adăugat cu succes în sistem.");
         } catch (Exception e) {
             // Afișăm un mesaj în caz de eroare

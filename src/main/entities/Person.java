@@ -21,9 +21,9 @@ public abstract class Person extends BaseEntity {
         this.phone = ""; // Poți folosi valori implicite care sunt sigure
         this.email = ""; // Evită erorile de validare pentru valori nule
     }
-    public Person(String ID, String name, String phone, String email)
+    public Person(String name, String phone, String email)
             throws InvalidPhoneNumberException, InvalidEmailFormatException {
-        super(ID);
+        super();
         this.name = name;
         setPhone(phone); // Use setter to validate, might throw InvalidPhoneNumberException
         setEmail(email); // Use setter to validate, might throw InvalidEmailFormatException

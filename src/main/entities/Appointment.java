@@ -1,17 +1,23 @@
 package main.entities;
 
 import java.time.LocalDateTime;
+
+import com.opencsv.bean.CsvBindByPosition;
 import main.enums.AppointmentStatus; // Import the enum if it's in a different package
 
 public abstract class Appointment extends BaseEntity {
-    protected Client client; // Reference to the Client object
-    protected Medic medic; // Reference to the Medic object
+    @CsvBindByPosition(position = 4)
+    protected Client client;
+    @CsvBindByPosition(position = 5)
+    protected Medic medic;
+    @CsvBindByPosition(position = 6)
     protected LocalDateTime appointmentDate;
-    protected AppointmentStatus status; // Use the enum type
+    @CsvBindByPosition(position = 7)
+    protected AppointmentStatus status;
 
     // Constructor
-    public Appointment(String ID, Client client, Medic medic, LocalDateTime appointmentDate, AppointmentStatus status) {
-        super(ID);
+    public Appointment(Client client, Medic medic, LocalDateTime appointmentDate, AppointmentStatus status) {
+        super();
         this.client = client;
         this.medic = medic;
         this.appointmentDate = appointmentDate;

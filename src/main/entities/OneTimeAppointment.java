@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 
 public class OneTimeAppointment extends Appointment {
     // Constructor
-    public OneTimeAppointment(String ID, Client client, Medic medic, LocalDateTime appointmentDate, AppointmentStatus status) {
-        super(ID, client, medic, appointmentDate, status);
+    public OneTimeAppointment(Client client, Medic medic, LocalDateTime appointmentDate, AppointmentStatus status) {
+        super(client, medic, appointmentDate, status);
     }
 
     // Implementing abstract methods from Appointment
