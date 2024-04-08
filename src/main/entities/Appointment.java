@@ -5,7 +5,9 @@ import java.time.LocalDateTime;
 import com.opencsv.bean.CsvBindByPosition;
 import main.enums.AppointmentStatus; // Import the enum if it's in a different package
 
-public abstract class Appointment extends BaseEntity {
+public abstract class Appointment
+        extends BaseEntity
+        implements Comparable<Appointment> {
     @CsvBindByPosition(position = 4)
     protected Client client;
     @CsvBindByPosition(position = 5)
@@ -23,7 +25,10 @@ public abstract class Appointment extends BaseEntity {
         this.appointmentDate = appointmentDate;
         this.status = status;
     }
-
+    @Override
+    public int compareTo(Appointment other){
+        return this.appointmentDate.compareTo(other.appointmentDate);
+    }
     // Getters and Setters
     public LocalDateTime getAppointmentDate() {
         return appointmentDate;

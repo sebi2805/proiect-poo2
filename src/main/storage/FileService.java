@@ -10,10 +10,10 @@ public class FileService
     private   Entity<Medic> medicManager;
     private   Entity<OneTimeAppointment> oneTimeAppointmentManager;
     private   Entity<RegularAppointment> regularAppointmentManager;
-    private final Entity<MedicalRecord> medicalRecordManager;
+    private  Entity<MedicalRecord> medicalRecordManager;
     private FileService(){
-//        clientManager = new Entity<>("clients", Client.class);
-//        medicManager = new Entity<>("medics", Medic.class);
+        clientManager = new Entity<>("clients", Client.class);
+        medicManager = new Entity<>("medics", Medic.class);
 //        oneTimeAppointmentManager = new Entity<>("oneTimeAppointments", OneTimeAppointment.class);
 //        regularAppointmentManager = new Entity<>("regularAppointments", RegularAppointment.class);
         medicalRecordManager = new Entity<>("medicalRecords", MedicalRecord.class);

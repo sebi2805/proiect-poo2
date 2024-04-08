@@ -3,12 +3,12 @@ package main.entities;
 import com.opencsv.bean.CsvBindByPosition;
 import com.opencsv.bean.CsvDate;
 import main.exceptions.FutureDateException;
-import main.exceptions.NotFoundException;
-import main.storage.FileService; // Assuming FileService can fetch Medic and Client instances
 
 import java.time.LocalDate;
 
-public class MedicalRecord extends BaseEntity {
+public class MedicalRecord
+        extends BaseEntity
+        implements Comparable<MedicalRecord> {
     @CsvBindByPosition(position = 4)
     private String clientId;
     @CsvBindByPosition(position = 5)
@@ -18,10 +18,7 @@ public class MedicalRecord extends BaseEntity {
     private LocalDate visitDate;
     @CsvBindByPosition(position = 7)
     private String notes;
-//    private Medic medic;
-//    private Client client;
 
-    private final transient FileService fileService = FileService.getInstance(); // Handling lazy loading
 
     // Constructor
     public MedicalRecord( String clientId, String medicId, LocalDate visitDate, String notes)
@@ -38,6 +35,10 @@ public class MedicalRecord extends BaseEntity {
         System.out.println("creating");
     }
 
+    @Override
+    public int compareTo(MedicalRecord other){
+        return visitDate.compareTo(other.visitDate);
+    }
     // Getters and Setters with lazy loading for Medic and Client
     public String getClientId() {
         return clientId;

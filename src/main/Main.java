@@ -1,28 +1,37 @@
 package main;
 
 import main.entities.Client;
-import main.entities.MedicalRecord;
-import main.exceptions.FutureDateException;
-import main.exceptions.InvalidEmailFormatException;
-import main.exceptions.InvalidPhoneNumberException;
-import main.services.ServiceManager;
+import main.gui.panels.ClientSearchPanel;
+import main.storage.FileService;
 
-import java.time.LocalDate;
-import java.util.List;
+import javax.swing.*;
 
 public class Main {
-    public static void main(String[] args) throws InvalidPhoneNumberException, InvalidEmailFormatException, FutureDateException {
-        ServiceManager serviceManager = ServiceManager.getInstance();
+    public static void main(String[] args) {
+        // Asigură-te că interfața grafică este creată și actualizată de pe firul de execuție EDT
+//        SwingUtilities.invokeLater(() -> {
+//            createAndShowGUI();
+//        });
+        FileService fileService = FileService.getInstance();
+        fileService.getClientManager().findById("0401abea-95fb-4980-b462-d90efd79a987").ifPresent(client -> {
+            System.out.println(client.getName());
+        });
+    }
 
-        // Creăm un client hardcodat
-        MedicalRecord newMedicalRecord = new MedicalRecord( "1", "1", LocalDate.now(), "");
-        try {
-            // Adăugăm clientul în sistem
-            serviceManager.getMedicalRecordService().addMedicalRecord(newMedicalRecord);
-            System.out.println("Clientul a fost adăugat cu succes în sistem.");
-        } catch (Exception e) {
-            // Afișăm un mesaj în caz de eroare
-            System.err.println("A apărut o eroare la adăugarea clientului: " + e.getMessage());
-        }
+    private static void createAndShowGUI() {
+        // Creează fereastra principală
+        JFrame frame = new JFrame("Client Search");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // Adaugă panel-ul de căutare a clienților
+        ClientSearchPanel searchPanel = new ClientSearchPanel();
+        frame.add(searchPanel);
+
+        // Setează dimensiunea ferestrei
+        frame.pack();
+        // Centrează fereastra pe ecran
+        frame.setLocationRelativeTo(null);
+        // Face fereastra vizibilă
+        frame.setVisible(true);
     }
 }

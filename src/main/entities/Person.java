@@ -6,7 +6,9 @@ import main.exceptions.InvalidPhoneNumberException;
 
 import javax.swing.text.html.parser.Entity;
 
-public abstract class Person extends BaseEntity {
+public abstract class Person
+        extends BaseEntity
+        implements Comparable<Person> {
     @CsvBindByPosition(position = 4)
     protected String name;
     @CsvBindByPosition(position = 5)
@@ -29,6 +31,10 @@ public abstract class Person extends BaseEntity {
         setEmail(email); // Use setter to validate, might throw InvalidEmailFormatException
     }
 
+    @Override
+    public int compareTo(Person other) {
+        return this.name.compareTo(other.name); // Compară numele alfabetic
+    }
     // Getters
     public String getName() {
         return name;

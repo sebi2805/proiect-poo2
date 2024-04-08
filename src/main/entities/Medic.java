@@ -13,7 +13,7 @@ public class Medic extends Person {
     private MedicalSpecialty specialty;
     private LocalTime workingHoursStart;
     private LocalTime workingHoursEnd;
-    private final List<Appointment> appointments; // List to track appointments
+    private List<Appointment> appointments;
 
     // Constructor
     public Medic(String name, String phone, String email, MedicalSpecialty specialty,
@@ -24,6 +24,9 @@ public class Medic extends Person {
         this.workingHoursEnd = workingHoursEnd;
         this.specialty = specialty;
         this.appointments = new ArrayList<>(); // Initialize the appointments list
+    }
+    public Medic(){
+        super();
     }
 
     // Method to add an appointment to the list
