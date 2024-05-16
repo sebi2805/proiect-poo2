@@ -15,16 +15,11 @@ public abstract class Appointment extends BaseEntity implements Comparable<Appoi
     @CsvCustomBindByPosition(position = 6, converter = LocalDateTimeConverter.class)
     protected LocalDateTime appointmentDate;
 
-    @CsvBindByPosition(position = 7)
-    protected AppointmentStatus status;
-
-    // Constructor
-    public Appointment(String clientId, String medicId, LocalDateTime appointmentDate, AppointmentStatus status) {
+    public Appointment(String clientId, String medicId, LocalDateTime appointmentDate) {
         super();
         this.clientId = clientId;
         this.medicId = medicId;
         this.appointmentDate = appointmentDate;
-        this.status = status;
     }
     public Appointment(){
         super();
@@ -34,7 +29,6 @@ public abstract class Appointment extends BaseEntity implements Comparable<Appoi
         return this.appointmentDate.compareTo(other.appointmentDate);
     }
 
-    // Getters and Setters
     public LocalDateTime getAppointmentDate() {
         return appointmentDate;
     }
@@ -42,15 +36,6 @@ public abstract class Appointment extends BaseEntity implements Comparable<Appoi
     public void setAppointmentDate(LocalDateTime appointmentDate) {
         this.appointmentDate = appointmentDate;
     }
-
-    public AppointmentStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(AppointmentStatus status) {
-        this.status = status;
-    }
-
     public String getClientId() {
         return clientId;
     }
@@ -67,17 +52,14 @@ public abstract class Appointment extends BaseEntity implements Comparable<Appoi
         this.medicId = medicId;
     }
 
-    // Abstract methods
     public abstract void confirmAppointment();
     public abstract void cancelAppointment();
 
-    // toString method
     @Override
     public String toString() {
         return "Appointment ID: " + getId() + "\n" +
                 "Client ID: " + clientId + "\n" +
                 "Medic ID: " + medicId + "\n" +
-                "Appointment Date: " + appointmentDate + "\n" +
-                "Status: " + status;
+                "Appointment Date: " + appointmentDate + "\n";
     }
 }

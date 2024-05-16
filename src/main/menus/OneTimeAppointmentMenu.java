@@ -132,7 +132,7 @@ public class OneTimeAppointmentMenu extends EntityMenu<OneTimeAppointment> {
         return LocalDateTime.parse(scanner.nextLine());
     }
 
-    private void updateAppointmentDetails(Appointment appointment) {
+    private void updateAppointmentDetails(OneTimeAppointment appointment) {
         System.out.print("Enter new Appointment Date and Time (leave blank to keep current): ");
         String appointmentDateInput = scanner.nextLine();
         if (!appointmentDateInput.isEmpty()) {
@@ -157,7 +157,7 @@ public class OneTimeAppointmentMenu extends EntityMenu<OneTimeAppointment> {
         }
     }
 
-    private String getDetailedAppointment(Appointment appointment) {
+    private String getDetailedAppointment(OneTimeAppointment appointment) {
         StringBuilder sb = new StringBuilder();
         sb.append("Appointment ID: ").append(appointment.getId()).append("\n");
 

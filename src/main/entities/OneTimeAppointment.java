@@ -1,27 +1,38 @@
 package main.entities;
 
+import com.opencsv.bean.CsvBindByPosition;
 import main.enums.AppointmentStatus;
 import java.time.LocalDateTime;
 
 public class OneTimeAppointment extends Appointment {
-    // Constructor
+
+    @CsvBindByPosition(position = 7)
+    protected AppointmentStatus status;
     public OneTimeAppointment(String clientId, String medicId, LocalDateTime appointmentDate, AppointmentStatus status) {
-        super(clientId, medicId, appointmentDate, status);
+        super(clientId, medicId, appointmentDate);
+        this.status = status;
+
     }
     public OneTimeAppointment() {
         super();
     }
-    // Implementing abstract methods from Appointment
     @Override
     public void confirmAppointment() {
         System.out.println("One-Time Appointment confirmed for " + appointmentDate);
-        // Additional logic specific to confirming a one-time appointment can be added here
+        this.status = AppointmentStatus.CONFIRMED;
     }
 
     @Override
     public void cancelAppointment() {
         System.out.println("One-Time Appointment on " + appointmentDate + " cancelled.");
-        // Additional logic specific to cancelling a one-time appointment can be added here
+        this.status = AppointmentStatus.CANCELED;
+    }
+    public AppointmentStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(AppointmentStatus status) {
+        this.status = status;
     }
     @Override
     public String toString(){

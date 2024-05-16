@@ -1,5 +1,5 @@
 package main.enums;
 
 public enum AppointmentStatus {
-    SCHEDULED, CANCELED, COMPLETED
+    SCHEDULED, CANCELED, COMPLETED,CONFIRMED
 }

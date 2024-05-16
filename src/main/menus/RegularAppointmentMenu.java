@@ -4,7 +4,6 @@ import main.entities.Client;
 import main.entities.Medic;
 import main.entities.RegularAppointment;
 import main.enums.AppointmentFrequency;
-import main.enums.AppointmentStatus;
 import main.exceptions.AlreadyExistsException;
 import main.exceptions.NotFoundException;
 import main.services.ScheduleService;
@@ -67,15 +66,6 @@ public class RegularAppointmentMenu extends EntityMenu<RegularAppointment> {
             String medicId = getUserChoice(ServiceManager.getMedicService().getOptions(), "Select Medic:");
             LocalDateTime appointmentDate = getAppointmentDate();
 
-            System.out.print("Enter Appointment Status (SCHEDULED, CONFIRMED, CANCELLED): ");
-            AppointmentStatus status;
-            try {
-                status = AppointmentStatus.valueOf(scanner.nextLine().toUpperCase());
-            } catch (IllegalArgumentException e) {
-                System.out.println("Invalid status. Regular Appointment not added.");
-                return;
-            }
-
             System.out.print("Enter Appointment Frequency (DAILY, WEEKLY, MONTHLY): ");
             AppointmentFrequency frequency;
             try {
@@ -85,7 +75,7 @@ public class RegularAppointmentMenu extends EntityMenu<RegularAppointment> {
                 return;
             }
 
-            RegularAppointment appointment = new RegularAppointment(clientId, medicId, appointmentDate, status, frequency);
+            RegularAppointment appointment = new RegularAppointment(clientId, medicId, appointmentDate, frequency);
             try {
                 service.add(appointment);
                 System.out.println("Regular Appointment added successfully.");
@@ -116,19 +106,6 @@ public class RegularAppointmentMenu extends EntityMenu<RegularAppointment> {
                 appointment.setAppointmentDate(appointmentDate);
             } catch (DateTimeParseException e) {
                 System.out.println("Error: Invalid date and time format.");
-                waitForUserInput();
-                return;
-            }
-        }
-
-        System.out.print("Enter new Appointment Status (leave blank to keep current): ");
-        String statusInput = scanner.nextLine();
-        if (!statusInput.isEmpty()) {
-            try {
-                AppointmentStatus status = AppointmentStatus.valueOf(statusInput.toUpperCase());
-                appointment.setStatus(status);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Invalid status. Regular Appointment not updated.");
                 waitForUserInput();
                 return;
             }
