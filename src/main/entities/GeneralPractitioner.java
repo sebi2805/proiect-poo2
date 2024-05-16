@@ -17,11 +17,10 @@ public class GeneralPractitioner extends Medic {
 
     // Override the displayDetails method to customize the output for General Practitioners
     @Override
-    public void displayDetails() {
-        // Call the superclass method to display general Medic info
-        super.displayDetails();
-        // Additional or customized details for a General Practitioner could be added here
-        System.out.println("Role: General Practitioner");
+    public String toString() {
+        String parentString = super.toString();
+        String roleInfo = "Role: General Practitioner";
+        return parentString + "\n" + roleInfo;
     }
 
     // General Practitioner-specific method

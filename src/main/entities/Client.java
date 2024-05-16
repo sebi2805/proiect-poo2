@@ -63,18 +63,12 @@ public class Client extends Person {
     }
 
     @Override
-    public void displayDetails() {
-        System.out.println("Client ID: " + getId());
-        System.out.println("Name: " + getName());
-        System.out.println("Phone: " + getPhone());
-        System.out.println("Email: " + getEmail());
-//        System.out.println("Appointments:");
-//        for (OneTimeAppointment appointment : appointments) {
-//            System.out.println("- " + appointment);
-//        }
-//        System.out.println("Medical Records:");
-//        for (MedicalRecord record : medicalRecords) {
-//            System.out.println("- " + record);
-//        }
+    public String toString() {
+        return "Client ID: " + getId() + "\n" +
+                "Name: " + getName() + "\n" +
+                "Phone: " + getPhone() + "\n" +
+                "Email: " + getEmail() + "\n" +
+                "Appointments: " + appointmentIdsSerialized + "\n" +
+                "Medical Records: " + medicalRecordIdsSerialized;
     }
 }

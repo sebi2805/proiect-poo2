@@ -6,16 +6,16 @@ import main.entities.*;
 public class FileService
 {
     private static FileService instance;
-    private   Entity<Client> clientManager;
-    private   Entity<Medic> medicManager;
-    private   Entity<OneTimeAppointment> oneTimeAppointmentManager;
-    private   Entity<RegularAppointment> regularAppointmentManager;
-    private  Entity<MedicalRecord> medicalRecordManager;
+    private final Entity<Client> clientManager;
+    private final Entity<Medic> medicManager;
+    private final Entity<OneTimeAppointment> oneTimeAppointmentManager;
+    private final Entity<RegularAppointment> regularAppointmentManager;
+    private final Entity<MedicalRecord> medicalRecordManager;
     private FileService(){
         clientManager = new Entity<>("clients", Client.class);
         medicManager = new Entity<>("medics", Medic.class);
-//        oneTimeAppointmentManager = new Entity<>("oneTimeAppointments", OneTimeAppointment.class);
-//        regularAppointmentManager = new Entity<>("regularAppointments", RegularAppointment.class);
+        oneTimeAppointmentManager = new Entity<>("oneTimeAppointments", OneTimeAppointment.class);
+        regularAppointmentManager = new Entity<>("regularAppointments", RegularAppointment.class);
         medicalRecordManager = new Entity<>("medicalRecords", MedicalRecord.class);
     }
 

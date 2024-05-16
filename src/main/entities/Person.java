@@ -68,9 +68,4 @@ public abstract class Person
             throw new InvalidEmailFormatException("Invalid email format");
         }
     }
-
-
-    // Since this class is abstract, you might also define some abstract methods that must be implemented by subclasses.
-    // For example, an abstract method for displaying person's details.
-    public abstract void displayDetails();
 }

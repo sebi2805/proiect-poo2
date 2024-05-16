@@ -1,24 +1,22 @@
 package main.services;
 
 import main.entities.Client;
-import main.entities.MedicalRecord;
 import main.exceptions.AlreadyExistsException;
 import main.exceptions.NotFoundException;
-import main.storage.FileService;
+import main.util.Option;
 import main.util.SearchCriteriaPerson;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class ClientService {
+public class ClientService extends BaseService<Client> {
 
     private static ClientService instance;
-    private final FileService fileService;
 
     // Private constructor to prevent instantiation
     private ClientService() {
-        this.fileService = FileService.getInstance();
+        super();
     }
 
     // Public method to get the singleton instance
@@ -30,46 +28,62 @@ public class ClientService {
     }
 
     // Method to add a new client
-    public void addClient(Client client) throws AlreadyExistsException {
-        Optional<Client> existingClient = fileService.getClientManager().findById(client.getId());
+    @Override
+    public void add(Client client) throws AlreadyExistsException {
+        Optional<Client> existingClient = getById(client.getId());
         if (existingClient.isPresent()) {
-            System.err.println("Client with ID " + client.getId() + " already exists.");
-            // Optionally, throw a custom exception or handle this case as needed
-            return; // Prevent adding the new client
+            throw new AlreadyExistsException("Client with ID " + client.getId() + " already exists.");
         }
         fileService.getClientManager().add(client);
         System.out.println("Client successfully added.");
     }
 
     // Method to retrieve a client by ID
-    public Client getClientById(String clientId) {
-        return fileService.getClientManager().findById(clientId).orElse(null);
+    @Override
+    public Optional<Client> getById(String clientId) {
+        return fileService.getClientManager().findById(clientId);
     }
-    public void updateClient(Client client) throws NotFoundException {
-            fileService.getClientManager().update(client);
-            System.out.println("Client successfully updated.");
-    }
-    public void deleteClient(String clientId) throws NotFoundException {
-        Optional<Client> clientOptional = fileService.getClientManager().findById(clientId);
-        if (clientOptional.isPresent()) {
-            fileService.getClientManager().delete(clientId);
-            System.out.println("Client with ID " + clientId + " successfully deleted.");
-        } else {
-            System.err.println("Client with ID " + clientId + " not found.");
+
+    @Override
+    public void update(Client client) throws NotFoundException {
+        if (!getById(client.getId()).isPresent()) {
+            throw new NotFoundException("Client with ID " + client.getId() + " not found.");
         }
+        fileService.getClientManager().update(client);
+        System.out.println("Client successfully updated.");
     }
+
+    @Override
+    public void delete(String clientId) throws NotFoundException {
+        if (!getById(clientId).isPresent()) {
+            throw new NotFoundException("Client with ID " + clientId + " not found.");
+        }
+        fileService.getClientManager().delete(clientId);
+        System.out.println("Client with ID " + clientId + " successfully deleted.");
+    }
+
+    @Override
+    public List<Client> getAll() {
+        return fileService.getClientManager().findAll();
+    }
+
     public List<Client> searchClients(SearchCriteriaPerson criteria) {
-        return fileService.getClientManager().findAll().stream()
+        return getAll().stream()
                 .filter(client -> matchesCriteria(client, criteria))
                 .collect(Collectors.toList());
     }
 
+    // Helper method to check if a client matches the given criteria
     private boolean matchesCriteria(Client client, SearchCriteriaPerson criteria) {
         boolean matchesName = criteria.getName() == null || client.getName().toLowerCase().contains(criteria.getName().toLowerCase());
-        boolean matchesEmail = criteria.getEmail() == null || client.getEmail().equalsIgnoreCase(criteria.getEmail().toLowerCase());
+        boolean matchesEmail = criteria.getEmail() == null || client.getEmail().equalsIgnoreCase(criteria.getEmail());
         boolean matchesPhone = criteria.getPhone() == null || client.getPhone().equals(criteria.getPhone());
 
         return matchesName && matchesEmail && matchesPhone;
     }
-
+    public List<Option> getOptions() {
+        return getAll().stream()
+                .map(client -> new Option(client.getId(), client.getName()))
+                .collect(Collectors.toList());
+    }
 }

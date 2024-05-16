@@ -58,18 +58,14 @@ public class Medic extends Person {
 
     // Implementing the abstract method from Person class
     @Override
-    public void displayDetails() {
-        System.out.println("Medic ID: " + getId());
-        System.out.println("Name: " + getName());
-        System.out.println("Phone: " + getPhone());
-        System.out.println("Email: " + getEmail());
-        System.out.println("Specialty: " + specialty);
-//        System.out.println("Available Hours: " + availableHours);
-        // Optionally display the appointment details
-        for (Appointment appointment : appointments) {
-            System.out.println("Appointment ID: " + appointment.getId());
-            // More details can be printed out here if needed
-        }
+    public String toString() {
+        return "Medic ID: " + getId() + "\n" +
+                "Name: " + getName() + "\n" +
+                "Phone: " + getPhone() + "\n" +
+                "Email: " + getEmail() + "\n" +
+                "Specialty: " + specialty + "\n" +
+                "Working Hours Start: " + workingHoursStart + "\n" +
+                "Working Hours End: " + workingHoursEnd;
     }
 
     public LocalTime getWorkingHoursStart() {

@@ -4,6 +4,8 @@ import main.entities.AppointmentOption;
 import main.entities.Medic;
 import main.entities.RegularAppointment;
 import main.enums.AppointmentStatus;
+import main.exceptions.AlreadyExistsException;
+import main.exceptions.NotFoundException;
 import main.storage.FileService;
 
 import java.time.LocalDate;
@@ -13,16 +15,54 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class ScheduleService {
+public class ScheduleService extends BaseService<RegularAppointment> {
     private static ScheduleService instance;
-    private final FileService fileService = FileService.getInstance();
-    private ScheduleService(){}
-    public synchronized static ScheduleService getInstance(){
-        if(instance==null){
+
+    private ScheduleService() {
+        super();
+    }
+
+    public synchronized static ScheduleService getInstance() {
+        if (instance == null) {
             instance = new ScheduleService();
         }
         return instance;
     }
+
+    @Override
+    public void add(RegularAppointment appointment) throws AlreadyExistsException {
+        if (fileService.getRegularAppointmentManager().findById(appointment.getId()).isPresent()) {
+            throw new AlreadyExistsException("Regular appointment already exists.");
+        }
+        fileService.getRegularAppointmentManager().add(appointment);
+    }
+
+    @Override
+    public Optional<RegularAppointment> getById(String id) {
+        return fileService.getRegularAppointmentManager().findById(id);
+    }
+
+    @Override
+    public void update(RegularAppointment appointment) throws NotFoundException {
+        if (!fileService.getRegularAppointmentManager().findById(appointment.getId()).isPresent()) {
+            throw new NotFoundException("Regular appointment not found.");
+        }
+        fileService.getRegularAppointmentManager().update(appointment);
+    }
+
+    @Override
+    public void delete(String id) throws NotFoundException {
+        if (!fileService.getRegularAppointmentManager().findById(id).isPresent()) {
+            throw new NotFoundException("Regular appointment not found.");
+        }
+        fileService.getRegularAppointmentManager().delete(id);
+    }
+
+    @Override
+    public List<RegularAppointment> getAll() {
+        return fileService.getRegularAppointmentManager().findAll();
+    }
+
     private boolean overlapsWithRegularAppointment(LocalDateTime appointmentStart, List<RegularAppointment> regularAppointments) {
         for (RegularAppointment regularAppointment : regularAppointments) {
             LocalDateTime appointmentDate = regularAppointment.getAppointmentDate();
@@ -42,16 +82,15 @@ public class ScheduleService {
         }
         return false;
     }
+
     public List<AppointmentOption> findAvailableAppointmentsBySpecialty(String specialty, LocalDate desiredDate) {
         List<AppointmentOption> availableOptions = new ArrayList<>();
         List<Medic> medicsWithSpecialty = fileService.getMedicManager().findAll().stream()
                 .filter(medic -> medic.getSpecialty().equals(specialty))
                 .collect(Collectors.toList());
 
-        // Presupunem că regularAppointments a fost deja definit și populat
         List<RegularAppointment> regularAppointments = fileService.getRegularAppointmentManager().findAll().stream()
                 .filter(appointment -> appointment.getStatus() == AppointmentStatus.SCHEDULED)
-                .map(appointment -> (RegularAppointment)appointment)
                 .collect(Collectors.toList());
 
         for (Medic medic : medicsWithSpecialty) {
@@ -62,7 +101,7 @@ public class ScheduleService {
                 LocalDateTime end = start.plusHours(1);
                 final LocalDateTime startTime = start;
 
-                boolean isScheduledAppointmentOverlap = fileService.getRegularAppointmentManager().findAll().stream()
+                boolean isScheduledAppointmentOverlap = regularAppointments.stream()
                         .filter(appointment -> appointment.getMedic().getId().equals(medic.getId()) && appointment.getStatus() == AppointmentStatus.SCHEDULED)
                         .anyMatch(appointment -> appointment.getAppointmentDate().isEqual(startTime) || (appointment.getAppointmentDate().isAfter(startTime) && appointment.getAppointmentDate().isBefore(end)));
 
@@ -80,6 +119,4 @@ public class ScheduleService {
 
         return availableOptions;
     }
-
-
 }

@@ -48,12 +48,10 @@ public class Entity<T extends BaseEntity> {
             entities = new ArrayList<>(); // Asigură-te că lista este curățată sau reinițializată aici
             entitiesMap = new HashMap<>(); // De asemenea, reinițializează map-ul, dacă este utilizat
 
-            System.out.println("load entities");
             for (T entity : csvToBean.parse()) {
                 entities.add(entity);
                 entitiesMap.put(entity.getId(), entity); // Atenție la ID-uri duplicate
             }
-            System.out.println(entities.size());
         } catch (IOException e) {
 
             e.printStackTrace();
@@ -88,6 +86,7 @@ public class Entity<T extends BaseEntity> {
         if(findById(entity.getId()).isEmpty()) {
             entity.setCreatedAt(LocalDateTime.now());
             entities.add(entity);
+            entitiesMap.put(entity.getId(), entity);
             saveToCSV();
         } else {
             throw new AlreadyExistsException("Entity already exists with this id");

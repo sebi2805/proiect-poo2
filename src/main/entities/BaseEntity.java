@@ -22,11 +22,9 @@ public abstract class BaseEntity {
     // Constructor
     public BaseEntity(String id) {
         this.id = id;
-        // updatedAt and deletedAt are not initialized until the entity is updated or deleted
     }
     public BaseEntity() {
-        this.id = UUID.randomUUID().toString(); // Generează și atribuie un ID unic
-        System.out.println("id generat random");
+        this.id = UUID.randomUUID().toString(); 
     }
 
     // Getters and Setters
@@ -43,7 +41,6 @@ public abstract class BaseEntity {
     public void setCreatedAt(LocalDateTime createdAt){
         this.createdAt=createdAt;
     }
-    // createdAt does not have a setter, as it should be set once upon creation
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
@@ -61,7 +58,6 @@ public abstract class BaseEntity {
         this.deletedAt = deletedAt;
     }
 
-    // Utility methods
     public void markUpdated() {
         setUpdatedAt(LocalDateTime.now());
     }

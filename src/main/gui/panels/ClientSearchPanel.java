@@ -41,7 +41,6 @@ public class ClientSearchPanel extends JPanel {
             String name = nameField.getText();
             String email = emailField.getText();
             String phone = phoneField.getText();
-            System.out.println("sebi");
             new SwingWorker<List<Client>, Void>() {
                 @Override
                 protected List<Client> doInBackground() throws Exception {
@@ -65,13 +64,11 @@ public class ClientSearchPanel extends JPanel {
 
     public List<Client> searchClients(SearchCriteriaPerson criteria) {
         // Presupunând că serviceManager și clientManager sunt deja inițializați și disponibili\
-        System.out.println("2");
         ClientService clientService = ServiceManager.getClientService();
         return clientService.searchClients(criteria);
     }
 
     private void updateTable(List<Client> clients) {
-        System.out.println("Actualizarea tabelului cu " + clients.size() + " clienți."); // Debugging
         tableModel.setClients(clients);
         clientsTable.revalidate();
         clientsTable.repaint();

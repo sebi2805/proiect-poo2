@@ -32,7 +32,6 @@ public class MedicalRecord
 
     public MedicalRecord() {
         super();
-        System.out.println("creating");
     }
 
     @Override
@@ -95,12 +94,16 @@ public class MedicalRecord
         this.notes = notes;
     }
 
-    // Method to display the details of the medical record
-    public void displayDetails() {
-        System.out.println("Medical Record ID: " + getId());
-        System.out.println("Client ID: " + clientId);
-        System.out.println("Medic ID: " + medicId);
-        System.out.println("Visit Date: " + visitDate);
-        System.out.println("Notes: " + notes);
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Medical Record ID: ").append(getId()).append("\n");
+        sb.append("Client ID: ").append(clientId).append("\n");
+        sb.append("Medic ID: ").append(medicId).append("\n");
+        sb.append("Visit Date: ").append(visitDate).append("\n");
+        sb.append("Notes: ").append(notes);
+
+        return sb.toString();
     }
 }
