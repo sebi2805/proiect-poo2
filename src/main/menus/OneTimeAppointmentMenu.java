@@ -13,11 +13,12 @@ import main.services.MedicService;
 import main.util.Option;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
-public class OneTimeAppointmentMenu extends EntityMenu<Appointment> {
+public class OneTimeAppointmentMenu extends EntityMenu<OneTimeAppointment> {
     private final ClientService clientService;
     private final MedicService medicService;
     private final Scanner scanner = new Scanner(System.in);
@@ -42,12 +43,14 @@ public class OneTimeAppointmentMenu extends EntityMenu<Appointment> {
 
     @Override
     protected void displayAll() {
-        List<Appointment> appointments = service.getAll();
-        if(appointments.isEmpty())
+        List<OneTimeAppointment> appointments = service.getAll();
+        if (appointments.isEmpty()) {
             System.out.println("No appointments are present.\n");
-        for (Appointment appointment : appointments) {
-            System.out.println(getDetailedAppointment(appointment));
-            System.out.println("\n");
+        } else {
+            for (OneTimeAppointment appointment : appointments) {
+                System.out.println(getDetailedAppointment(appointment));
+                System.out.println("\n");
+            }
         }
         waitForUserInput();
     }
@@ -56,7 +59,7 @@ public class OneTimeAppointmentMenu extends EntityMenu<Appointment> {
     protected void searchById() {
         System.out.print("Enter One-Time Appointment ID: ");
         String id = scanner.nextLine();
-        Optional<Appointment> appointment = service.getById(id);
+        Optional<OneTimeAppointment> appointment = service.getById(id);
         appointment.ifPresentOrElse(
                 System.out::println,
                 () -> System.out.println("One-Time Appointment not found.")
@@ -89,42 +92,11 @@ public class OneTimeAppointmentMenu extends EntityMenu<Appointment> {
 
     @Override
     protected void update() {
-        List<Appointment> appointments = service.getAll();
-        if (appointments.isEmpty()) {
-            System.out.println("No appointments available to update.");
-            waitForUserInput();
+        OneTimeAppointment appointment = chooseOneTimeAppointment();
+        if (appointment == null) {
             return;
         }
 
-        // Display all appointments with details
-        for (int i = 0; i < appointments.size(); i++) {
-            Appointment appointment = appointments.get(i);
-            String appointmentDetails = String.format("%d. %s | %s | %s",
-                    i + 1,
-                    appointment.getAppointmentDate(),
-                    clientService.getById(appointment.getClientId()).map(Client::getName).orElse("Unknown Client"),
-                    medicService.getById(appointment.getMedicId()).map(Medic::getName).orElse("Unknown Medic")
-            );
-            System.out.println(appointmentDetails);
-        }
-
-        // Let the user select an appointment by its index
-        System.out.print("Select an appointment to update (enter the number): ");
-        int appointmentIndex;
-        try {
-            appointmentIndex = Integer.parseInt(scanner.nextLine()) - 1;
-            if (appointmentIndex < 0 || appointmentIndex >= appointments.size()) {
-                System.out.println("Invalid selection. Please try again.");
-                waitForUserInput();
-                return;
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Please enter a valid number.");
-            waitForUserInput();
-            return;
-        }
-
-        Appointment appointment = appointments.get(appointmentIndex);
         System.out.println("Current details: " + getDetailedAppointment(appointment));
 
         try {
@@ -140,42 +112,11 @@ public class OneTimeAppointmentMenu extends EntityMenu<Appointment> {
 
     @Override
     protected void delete() {
-        List<Appointment> appointments = service.getAll();
-        if (appointments.isEmpty()) {
-            System.out.println("No appointments available to delete.");
-            waitForUserInput();
+        OneTimeAppointment appointment = chooseOneTimeAppointment();
+        if (appointment == null) {
             return;
         }
 
-        // Display all appointments with details
-        for (int i = 0; i < appointments.size(); i++) {
-            Appointment appointment = appointments.get(i);
-            String appointmentDetails = String.format("%d. %s | %s | %s",
-                    i + 1,
-                    appointment.getAppointmentDate(),
-                    clientService.getById(appointment.getClientId()).map(Client::getName).orElse("Unknown Client"),
-                    medicService.getById(appointment.getMedicId()).map(Medic::getName).orElse("Unknown Medic")
-            );
-            System.out.println(appointmentDetails);
-        }
-
-        // Let the user select an appointment by its index
-        System.out.print("Select an appointment to delete (enter the number): ");
-        int appointmentIndex;
-        try {
-            appointmentIndex = Integer.parseInt(scanner.nextLine()) - 1;
-            if (appointmentIndex < 0 || appointmentIndex >= appointments.size()) {
-                System.out.println("Invalid selection. Please try again.");
-                waitForUserInput();
-                return;
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Please enter a valid number.");
-            waitForUserInput();
-            return;
-        }
-
-        Appointment appointment = appointments.get(appointmentIndex);
         try {
             service.delete(appointment.getId());
             System.out.println("One-Time Appointment deleted successfully.");
@@ -186,9 +127,6 @@ public class OneTimeAppointmentMenu extends EntityMenu<Appointment> {
         waitForUserInput();
     }
 
-
-
-
     private LocalDateTime getAppointmentDate() {
         System.out.print("Enter Appointment Date and Time (YYYY-MM-DDTHH:MM): ");
         return LocalDateTime.parse(scanner.nextLine());
@@ -198,8 +136,13 @@ public class OneTimeAppointmentMenu extends EntityMenu<Appointment> {
         System.out.print("Enter new Appointment Date and Time (leave blank to keep current): ");
         String appointmentDateInput = scanner.nextLine();
         if (!appointmentDateInput.isEmpty()) {
-            LocalDateTime appointmentDate = LocalDateTime.parse(appointmentDateInput);
-            appointment.setAppointmentDate(appointmentDate);
+            try {
+                LocalDateTime appointmentDate = LocalDateTime.parse(appointmentDateInput);
+                appointment.setAppointmentDate(appointmentDate);
+            } catch (DateTimeParseException e) {
+                System.out.println("Error: Invalid date and time format.");
+                return;
+            }
         }
 
         System.out.print("Enter new Appointment Status (leave blank to keep current): ");
@@ -235,5 +178,33 @@ public class OneTimeAppointmentMenu extends EntityMenu<Appointment> {
         sb.append("Appointment Date: ").append(appointment.getAppointmentDate()).append("\n");
         sb.append("Status: ").append(appointment.getStatus());
         return sb.toString();
+    }
+
+    private OneTimeAppointment chooseOneTimeAppointment() {
+        List<OneTimeAppointment> appointments = service.getAll();
+        if (appointments.isEmpty()) {
+            System.out.println("No one-time appointments available.");
+            waitForUserInput();
+            return null;
+        }
+
+        // Display all one-time appointments
+        for (int i = 0; i < appointments.size(); i++) {
+            Appointment appointment = appointments.get(i);
+            System.out.printf("%d. %s | %s | %s\n",
+                    i + 1,
+                    appointment.getAppointmentDate(),
+                    clientService.getById(appointment.getClientId()).map(Client::getName).orElse("Unknown Client"),
+                    medicService.getById(appointment.getMedicId()).map(Medic::getName).orElse("Unknown Medic")
+            );
+        }
+
+        // Let the user select a one-time appointment by its index
+        int appointmentIndex = getUserIndexInput(appointments.size(), "Select a one-time appointment (enter the number): ");
+        if (appointmentIndex == -1) {
+            return null;
+        }
+
+        return appointments.get(appointmentIndex);
     }
 }

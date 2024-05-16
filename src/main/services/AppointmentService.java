@@ -1,6 +1,7 @@
 package main.services;
 
 import main.entities.Appointment;
+import main.entities.MedicalRecord;
 import main.entities.OneTimeAppointment;
 import main.entities.RegularAppointment;
 import main.exceptions.AlreadyExistsException;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class AppointmentService extends BaseService<Appointment> {
+public class AppointmentService extends BaseService<OneTimeAppointment> {
 
     private static AppointmentService instance;
     private final FileService fileService;
@@ -30,48 +31,26 @@ public class AppointmentService extends BaseService<Appointment> {
     }
 
     @Override
-    public void add(Appointment appointment) throws AlreadyExistsException {
-        if (appointment instanceof OneTimeAppointment) {
+    public void add(OneTimeAppointment appointment) throws AlreadyExistsException {
             if (fileService.getOneTimeAppointmentManager().findById(appointment.getId()).isPresent()) {
                 throw new AlreadyExistsException("One-time appointment already exists.");
             }
             fileService.getOneTimeAppointmentManager().add((OneTimeAppointment) appointment);
-        } else if (appointment instanceof RegularAppointment) {
-            if (fileService.getRegularAppointmentManager().findById(appointment.getId()).isPresent()) {
-                throw new AlreadyExistsException("Regular appointment already exists.");
-            }
-            fileService.getRegularAppointmentManager().add((RegularAppointment) appointment);
-        }
     }
 
     @Override
-    public Optional<Appointment> getById(String appointmentId) {
-        Optional<Appointment> appointment = castToAppointment(fileService.getOneTimeAppointmentManager().findById(appointmentId));
-
-        if (appointment.isEmpty()) {
-            appointment = castToAppointment(fileService.getRegularAppointmentManager().findById(appointmentId));
-        }
+    public Optional<OneTimeAppointment> getById(String appointmentId) {
+        Optional<OneTimeAppointment> appointment = fileService.getOneTimeAppointmentManager().findById(appointmentId);
 
         return appointment;
     }
 
-    private Optional<Appointment> castToAppointment(Optional<? extends Appointment> opt) {
-        return opt.map(appointment -> (Appointment) appointment);
-    }
-
     @Override
-    public void update(Appointment appointment) throws NotFoundException {
-        if (appointment instanceof OneTimeAppointment) {
-            if (!fileService.getOneTimeAppointmentManager().findById(appointment.getId()).isPresent()) {
-                throw new NotFoundException("One-time appointment not found.");
-            }
-            fileService.getOneTimeAppointmentManager().update((OneTimeAppointment) appointment);
-        } else if (appointment instanceof RegularAppointment) {
-            if (!fileService.getRegularAppointmentManager().findById(appointment.getId()).isPresent()) {
-                throw new NotFoundException("Regular appointment not found.");
-            }
-            fileService.getRegularAppointmentManager().update((RegularAppointment) appointment);
+    public void update(OneTimeAppointment appointment) throws NotFoundException {
+        if (!fileService.getOneTimeAppointmentManager().findById(appointment.getId()).isPresent()) {
+            throw new NotFoundException("One-time appointment not found.");
         }
+        fileService.getOneTimeAppointmentManager().update((OneTimeAppointment) appointment);
     }
 
     @Override
@@ -79,39 +58,28 @@ public class AppointmentService extends BaseService<Appointment> {
         try {
             fileService.getOneTimeAppointmentManager().delete(appointmentId);
         } catch (NotFoundException e) {
-            fileService.getRegularAppointmentManager().delete(appointmentId);
+            System.out.println("The appointment was not found.");
         }
     }
 
     @Override
-    public List<Appointment> getAll() {
-        List<? extends Appointment> oneTimeAppointments = fileService.getOneTimeAppointmentManager().findAll();
-        List<? extends Appointment> regularAppointments = fileService.getRegularAppointmentManager().findAll();
-        List<Appointment> allAppointments = new ArrayList<>();
-        allAppointments.addAll(oneTimeAppointments);
-        allAppointments.addAll(regularAppointments);
-        return allAppointments;
-    }
-
-    public List<Appointment> getAppointmentsForClient(String clientId) {
-        List<Appointment> oneTimeAppointments = fileService.getOneTimeAppointmentManager().findAll().stream()
-                .filter(appointment -> appointment.getClientId().equals(clientId))
-                .collect(Collectors.toList());
-        List<Appointment> regularAppointments = fileService.getRegularAppointmentManager().findAll().stream()
-                .filter(appointment -> appointment.getClientId().equals(clientId))
-                .collect(Collectors.toList());
-        oneTimeAppointments.addAll(regularAppointments);
+    public List<OneTimeAppointment> getAll() {
+        List<OneTimeAppointment> oneTimeAppointments = fileService.getOneTimeAppointmentManager().findAll();
         return oneTimeAppointments;
     }
 
-    public List<Appointment> getAppointmentsForMedic(String medicId) {
-        List<Appointment> oneTimeAppointments = fileService.getOneTimeAppointmentManager().findAll().stream()
+    public List<OneTimeAppointment> getAppointmentsByClientId(String clientId) {
+        List<OneTimeAppointment> oneTimeAppointments = fileService.getOneTimeAppointmentManager().findAll().stream()
+                .filter(appointment -> appointment.getClientId().equals(clientId))
+                .collect(Collectors.toList());
+        return oneTimeAppointments;
+    }
+
+    public List<OneTimeAppointment> getAppointmentsByMedicId(String medicId) {
+        List<OneTimeAppointment> oneTimeAppointments = fileService.getOneTimeAppointmentManager().findAll().stream()
                 .filter(appointment -> appointment.getMedicId().equals(medicId))
                 .collect(Collectors.toList());
-        List<Appointment> regularAppointments = fileService.getRegularAppointmentManager().findAll().stream()
-                .filter(appointment -> appointment.getMedicId().equals(medicId))
-                .collect(Collectors.toList());
-        oneTimeAppointments.addAll(regularAppointments);
+
         return oneTimeAppointments;
     }
 }

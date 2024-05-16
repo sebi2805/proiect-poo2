@@ -13,41 +13,48 @@ public abstract class EntityMenu<T> {
         this.service = service;
     }
 
+    // so we want every menu to call this, but with its menu choice handler, because some menu have their own functionaliy
     public void displayMenu() {
-        while (true) {
+        boolean running = true;
+        while (running) {
             printMenuOptions();
             int choice = scanner.nextInt();
-            scanner.nextLine(); // consume newline
-            switch (choice) {
-                case 1:
-                    displayAll();
-                    break;
-                case 2:
-                    searchById();
-                    break;
-                case 3:
-                    add();
-                    break;
-                case 4:
-                    update();
-                    break;
-                case 5:
-                    delete();
-                    break;
-                case 0:
-                    return; // Exit to main menu
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-            }
+            System.out.println(choice);
+            scanner.nextLine();
+            running = handleMenuChoice(choice);
+            System.out.println(running);
             System.out.println("\n");
-
         }
+        return;
+    }
+
+    protected boolean handleMenuChoice(int choice) {
+        switch (choice) {
+            case 1:
+                displayAll();
+                break;
+            case 2:
+                searchById();
+                break;
+            case 3:
+                add();
+                break;
+            case 4:
+                update();
+                break;
+            case 5:
+                delete();
+                break;
+            case 0:
+                return false; // Exit to main menu
+            default:
+                System.out.println("Invalid choice. Please try again.");
+        }
+        return true;
     }
 
     protected abstract void printMenuOptions();
-
     protected abstract void displayAll();
-
     protected abstract void searchById();
 
     protected abstract void add();
@@ -74,5 +81,20 @@ public abstract class EntityMenu<T> {
         int choice = Integer.parseInt(input);
         return options.get(choice - 1).getValue();
     }
-
+    protected int getUserIndexInput(int max, String prompt) {
+        System.out.print(prompt);
+        try {
+            int index = Integer.parseInt(scanner.nextLine()) - 1;
+            if (index < 0 || index >= max) {
+                System.out.println("Invalid selection. Please try again.");
+                waitForUserInput();
+                return -1;
+            }
+            return index;
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a valid number.");
+            waitForUserInput();
+            return -1;
+        }
+    }
 }

@@ -45,17 +45,7 @@ public class MedicalRecord
 
     public void setClientId(String clientId) {
         this.clientId = clientId;
-//        this.client = null; // Reset client object to enforce lazy loading next time it's accessed
     }
-
-//    public Client getClient() throws NotFoundException {
-//        if (client == null && clientId != null) {
-//            client = fileService.getClientManager()
-//                    .findById(clientId)
-//                    .orElseThrow(() -> new NotFoundException("Client not found"));
-//        }
-//        return client;
-//    }
 
     public String getMedicId() {
         return medicId;
@@ -63,17 +53,7 @@ public class MedicalRecord
 
     public void setMedicId(String medicId) {
         this.medicId = medicId;
-//        this.medic = null; // Reset medic object to enforce lazy loading next time it's accessed
     }
-
-//    public Medic getMedic() throws NotFoundException {
-//        if (medic == null && medicId != null) {
-//            medic = fileService.getMedicManager()
-//                    .findById(medicId)
-//                    .orElseThrow(() ->  new NotFoundException("Medic not found"));
-//        }
-//        return medic;
-//    }
 
     public LocalDate getVisitDate() {
         return visitDate;

@@ -1,12 +1,12 @@
 package main.menus;
 
-import main.entities.Medic;
+import main.entities.*;
 import main.enums.MedicalSpecialty;
 import main.exceptions.AlreadyExistsException;
 import main.exceptions.InvalidEmailFormatException;
 import main.exceptions.InvalidPhoneNumberException;
 import main.exceptions.NotFoundException;
-import main.services.MedicService;
+import main.services.*;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -15,8 +15,15 @@ import java.util.Scanner;
 
 public class MedicMenu extends EntityMenu<Medic> {
 
-    public MedicMenu(MedicService service) {
-        super(service);
+    private final MedicalRecordService medicalRecordService;
+    private final AppointmentService appointmentService;
+    private final ScheduleService scheduleService;
+
+    public MedicMenu(MedicService medicService, MedicalRecordService medicalRecordService, AppointmentService appointmentService, ScheduleService scheduleService) {
+        super(medicService);
+        this.medicalRecordService = medicalRecordService;
+        this.appointmentService = appointmentService;
+        this.scheduleService = scheduleService;
     }
 
     @Override
@@ -27,25 +34,59 @@ public class MedicMenu extends EntityMenu<Medic> {
         System.out.println("3. Add Medic");
         System.out.println("4. Update Medic");
         System.out.println("5. Delete Medic");
+        System.out.println("6. Get Schedule for Medic");
+        System.out.println("7. Get One-Time Appointments for Medic");
+        System.out.println("8. Get Regular Appointments for Medic");
         System.out.println("0. Back to Main Menu");
         System.out.print("Enter your choice: ");
     }
 
     @Override
+    protected boolean handleMenuChoice(int choice) {
+        switch (choice) {
+            case 1 -> displayAll();
+            case 2 -> searchById();
+            case 3 -> add();
+            case 4 -> update();
+            case 5 -> delete();
+            case 6 -> getScheduleForMedic();
+            case 7 -> getOneTimeAppointmentsForMedic();
+            case 8 -> getRegularAppointmentsForMedic();
+            case 0 -> {
+                return false; // Exit to main menu
+            }
+            default -> System.out.println("Invalid choice. Please try again.");
+        }
+        return true;
+    }
+
+    @Override
     protected void displayAll() {
         List<Medic> medics = service.getAll();
-        if(medics.isEmpty())
-            System.out.println("No clients available.");
-        for (Medic medic : medics) {
-            System.out.println(medic);
-            System.out.println("\n");
+        if (medics.isEmpty()) {
+            System.out.println("No medics available.");
+        } else {
+            for (Medic medic : medics) {
+                System.out.println(medic);
+                printMedicDetails(medic);
+            }
         }
+    }
+
+    private void printMedicDetails(Medic medic) {
+        int medicalRecordCount = medicalRecordService.getRecordsByMedicId(medic.getId()).size();
+        int oneTimeAppointmentsCount = appointmentService.getAppointmentsByMedicId(medic.getId()).size();
+        int regularAppointmentsCount = scheduleService.getAppointmentsByMedicId(medic.getId()).size();
+
+        System.out.printf("Medical Records: %d\n", medicalRecordCount);
+        System.out.printf("One-Time Appointments: %d\n", oneTimeAppointmentsCount);
+        System.out.printf("Regular Appointments: %d\n", regularAppointmentsCount);
+        System.out.println("\n");
     }
 
     @Override
     protected void searchById() {
-        System.out.print("Enter Medic ID: ");
-        String id = scanner.nextLine();
+        String id = promptUser("Enter Medic ID: ");
         Optional<Medic> medic = service.getById(id);
         medic.ifPresentOrElse(
                 System.out::println,
@@ -55,24 +96,18 @@ public class MedicMenu extends EntityMenu<Medic> {
 
     @Override
     protected void add() {
-        System.out.print("Enter Medic Name: ");
-        String name = scanner.nextLine();
-        System.out.print("Enter Medic Phone: ");
-        String phone = scanner.nextLine();
-        System.out.print("Enter Medic Email: ");
-        String email = scanner.nextLine();
-        System.out.print("Enter Medic Specialty (GENERAL_PRACTITIONER or SURGEON): ");
+        String name = promptUser("Enter Medic Name: ");
+        String phone = promptUser("Enter Medic Phone: ");
+        String email = promptUser("Enter Medic Email: ");
         MedicalSpecialty specialty;
         try {
-            specialty = MedicalSpecialty.valueOf(scanner.nextLine().toUpperCase());
+            specialty = MedicalSpecialty.valueOf(promptUser("Enter Medic Specialty (GENERAL_PRACTITIONER or SURGEON): ").toUpperCase());
         } catch (IllegalArgumentException e) {
             System.out.println("Invalid specialty. Medic not added.");
             return;
         }
-        System.out.print("Enter Working Hours Start (HH:MM): ");
-        LocalTime workingHoursStart = LocalTime.parse(scanner.nextLine());
-        System.out.print("Enter Working Hours End (HH:MM): ");
-        LocalTime workingHoursEnd = LocalTime.parse(scanner.nextLine());
+        LocalTime workingHoursStart = LocalTime.parse(promptUser("Enter Working Hours Start (HH:MM): "));
+        LocalTime workingHoursEnd = LocalTime.parse(promptUser("Enter Working Hours End (HH:MM): "));
 
         try {
             Medic medic = new Medic(name, phone, email, specialty, workingHoursStart, workingHoursEnd);
@@ -82,52 +117,24 @@ public class MedicMenu extends EntityMenu<Medic> {
             System.out.println("Error: " + e.getMessage());
         } catch (AlreadyExistsException e) {
             System.out.println("Error: Medic already exists.");
-        } catch (Exception e){
-            System.out.println(e.getMessage());
         }
     }
 
     @Override
     protected void update() {
-        List<Medic> medics = service.getAll();
-        if (medics.isEmpty()) {
-            System.out.println("No medics available to update.");
-            waitForUserInput();
+        Medic medic = chooseMedic();
+        if (medic == null) {
             return;
         }
 
-        // Display all medics
-        for (int i = 0; i < medics.size(); i++) {
-            System.out.printf("%d. %s : %s\n", i + 1, medics.get(i).getName(), medics.get(i).getEmail());
-        }
-
-        // Let the user select a medic by their index
-        System.out.print("Select a medic to update (enter the number): ");
-        int medicIndex;
-        try {
-            medicIndex = Integer.parseInt(scanner.nextLine()) - 1;
-            if (medicIndex < 0 || medicIndex >= medics.size()) {
-                System.out.println("Invalid selection. Please try again.");
-                waitForUserInput();
-                return;
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Please enter a valid number.");
-            waitForUserInput();
-            return;
-        }
-
-        Medic medic = medics.get(medicIndex);
         System.out.println("Current details: " + medic);
 
-        System.out.print("Enter new Medic Name (leave blank to keep current): ");
-        String name = scanner.nextLine();
+        String name = promptUser("Enter new Medic Name (leave blank to keep current): ");
         if (!name.isEmpty()) {
             medic.setName(name);
         }
 
-        System.out.print("Enter new Medic Phone (leave blank to keep current): ");
-        String phone = scanner.nextLine();
+        String phone = promptUser("Enter new Medic Phone (leave blank to keep current): ");
         if (!phone.isEmpty()) {
             try {
                 medic.setPhone(phone);
@@ -138,8 +145,7 @@ public class MedicMenu extends EntityMenu<Medic> {
             }
         }
 
-        System.out.print("Enter new Medic Email (leave blank to keep current): ");
-        String email = scanner.nextLine();
+        String email = promptUser("Enter new Medic Email (leave blank to keep current): ");
         if (!email.isEmpty()) {
             try {
                 medic.setEmail(email);
@@ -150,8 +156,7 @@ public class MedicMenu extends EntityMenu<Medic> {
             }
         }
 
-        System.out.print("Enter new Medic Specialty (leave blank to keep current): ");
-        String specialtyInput = scanner.nextLine();
+        String specialtyInput = promptUser("Enter new Medic Specialty (leave blank to keep current): ");
         if (!specialtyInput.isEmpty()) {
             try {
                 MedicalSpecialty specialty = MedicalSpecialty.valueOf(specialtyInput.toUpperCase());
@@ -163,15 +168,13 @@ public class MedicMenu extends EntityMenu<Medic> {
             }
         }
 
-        System.out.print("Enter new Working Hours Start (leave blank to keep current): ");
-        String workingHoursStartInput = scanner.nextLine();
+        String workingHoursStartInput = promptUser("Enter new Working Hours Start (leave blank to keep current): ");
         if (!workingHoursStartInput.isEmpty()) {
             LocalTime workingHoursStart = LocalTime.parse(workingHoursStartInput);
             medic.setWorkingHoursStart(workingHoursStart);
         }
 
-        System.out.print("Enter new Working Hours End (leave blank to keep current): ");
-        String workingHoursEndInput = scanner.nextLine();
+        String workingHoursEndInput = promptUser("Enter new Working Hours End (leave blank to keep current): ");
         if (!workingHoursEndInput.isEmpty()) {
             LocalTime workingHoursEnd = LocalTime.parse(workingHoursEndInput);
             medic.setWorkingHoursEnd(workingHoursEnd);
@@ -186,37 +189,14 @@ public class MedicMenu extends EntityMenu<Medic> {
 
         waitForUserInput();
     }
+
     @Override
     protected void delete() {
-        List<Medic> medics = service.getAll();
-        if (medics.isEmpty()) {
-            System.out.println("No medics available to delete.");
-            waitForUserInput();
+        Medic medic = chooseMedic();
+        if (medic == null) {
             return;
         }
 
-        // Display all medics
-        for (int i = 0; i < medics.size(); i++) {
-            System.out.printf("%d. %s : %s\n", i + 1, medics.get(i).getName(), medics.get(i).getEmail());
-        }
-
-        // Let the user select a medic by their index
-        System.out.print("Select a medic to delete (enter the number): ");
-        int medicIndex;
-        try {
-            medicIndex = Integer.parseInt(scanner.nextLine()) - 1;
-            if (medicIndex < 0 || medicIndex >= medics.size()) {
-                System.out.println("Invalid selection. Please try again.");
-                waitForUserInput();
-                return;
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Please enter a valid number.");
-            waitForUserInput();
-            return;
-        }
-
-        Medic medic = medics.get(medicIndex);
         try {
             service.delete(medic.getId());
             System.out.println("Medic deleted successfully.");
@@ -227,4 +207,95 @@ public class MedicMenu extends EntityMenu<Medic> {
         waitForUserInput();
     }
 
+    private void getScheduleForMedic() {
+        Medic medic = chooseMedic();
+        if (medic == null) {
+            return;
+        }
+
+        List<RegularAppointment> schedules = scheduleService.getAppointmentsByMedicId(medic.getId());
+        if (schedules.isEmpty()) {
+            System.out.println("No schedules found for this medic.");
+        } else {
+            System.out.println("Schedules:");
+            for (RegularAppointment schedule : schedules) {
+                System.out.println(schedule);
+            }
+        }
+        waitForUserInput();
+    }
+
+    private void getOneTimeAppointmentsForMedic() {
+        Medic medic = chooseMedic();
+        if (medic == null) {
+            return;
+        }
+
+        List<OneTimeAppointment> appointments = appointmentService.getAppointmentsByMedicId(medic.getId());
+        if (appointments.isEmpty()) {
+            System.out.println("No one-time appointments found for this medic.");
+        } else {
+            System.out.println("One-Time Appointments:");
+            for (Appointment appointment : appointments) {
+                System.out.println(appointment);
+            }
+        }
+        waitForUserInput();
+    }
+
+    private void getRegularAppointmentsForMedic() {
+        Medic medic = chooseMedic();
+        if (medic == null) {
+            return;
+        }
+
+        List<RegularAppointment> appointments = scheduleService.getAppointmentsByMedicId(medic.getId());
+        if (appointments.isEmpty()) {
+            System.out.println("No regular appointments found for this medic.");
+        } else {
+            System.out.println("Regular Appointments:");
+            for (Appointment appointment : appointments) {
+                System.out.println(appointment);
+            }
+        }
+        waitForUserInput();
+    }
+
+    private Medic chooseMedic() {
+        List<Medic> medics = service.getAll();
+        if (medics.isEmpty()) {
+            System.out.println("No medics available.");
+            waitForUserInput();
+            return null;
+        }
+
+        for (int i = 0; i < medics.size(); i++) {
+            System.out.printf("%d. %s : %s\n", i + 1, medics.get(i).getName(), medics.get(i).getEmail());
+        }
+
+        int medicIndex = promptUserForInt("Select a medic (enter the number): ", 1, medics.size());
+        if (medicIndex == -1) return null;
+
+        return medics.get(medicIndex - 1);
+    }
+
+    private String promptUser(String message) {
+        System.out.print(message);
+        return scanner.nextLine();
+    }
+
+    private int promptUserForInt(String message, int min, int max) {
+        while (true) {
+            try {
+                System.out.print(message);
+                int choice = Integer.parseInt(scanner.nextLine());
+                if (choice >= min && choice <= max) {
+                    return choice;
+                }
+                System.out.println("Invalid selection. Please try again.");
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+            }
+        }
+    }
 }

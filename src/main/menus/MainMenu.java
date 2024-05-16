@@ -9,8 +9,8 @@ public class MainMenu {
     private static final ClientService clientService = ServiceManager.getClientService();
     private static final MedicService medicService = ServiceManager.getMedicService();
     private static final MedicalRecordService medicalRecordService = ServiceManager.getMedicalRecordService();
-    private static final ScheduleService regularAppointmentService = ServiceManager.getScheduleService();
-    private static final AppointmentService oneTimeAppointmentService = ServiceManager.getAppointmentService();
+    private static final ScheduleService scheduleService = ServiceManager.getScheduleService();
+    private static final AppointmentService appointmentService = ServiceManager.getAppointmentService();
 
     public static void main(String[] args) {
         while (true) {
@@ -20,19 +20,19 @@ public class MainMenu {
 
             switch (choice) {
                 case 1:
-                    new ClientMenu(clientService).displayMenu();
+                    new ClientMenu(clientService, medicalRecordService, appointmentService, scheduleService).displayMenu();
                     break;
                 case 2:
-                    new MedicMenu(medicService).displayMenu();
+                    new MedicMenu(medicService, medicalRecordService, appointmentService, scheduleService).displayMenu();
                     break;
                 case 3:
                     new MedicalRecordMenu(medicalRecordService, clientService, medicService).displayMenu();
                     break;
                 case 4:
-                    new RegularAppointmentMenu(regularAppointmentService).displayMenu();
+                    new RegularAppointmentMenu(scheduleService).displayMenu();
                     break;
                 case 5:
-                    new OneTimeAppointmentMenu(oneTimeAppointmentService, clientService, medicService).displayMenu();
+                    new OneTimeAppointmentMenu(appointmentService, clientService, medicService).displayMenu();
                     break;
                 case 0:
                     System.exit(0);

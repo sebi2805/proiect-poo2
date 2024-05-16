@@ -1,11 +1,13 @@
 package main.services;
 
 import main.entities.MedicalRecord;
+import main.entities.RegularAppointment;
 import main.exceptions.AlreadyExistsException;
 import main.exceptions.NotFoundException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MedicalRecordService extends BaseService<MedicalRecord> {
 
@@ -54,5 +56,16 @@ public class MedicalRecordService extends BaseService<MedicalRecord> {
     @Override
     public List<MedicalRecord> getAll() {
         return fileService.getMedicalRecordManager().findAll();
+    }
+
+    public List<MedicalRecord> getRecordsByClientId(String clientId){
+        return fileService.getMedicalRecordManager().findAll().stream()
+                .filter(medicalRecord -> medicalRecord.getClientId().equals(clientId))
+                .collect(Collectors.toList());
+    }
+    public List<MedicalRecord> getRecordsByMedicId(String medicId){
+        return fileService.getMedicalRecordManager().findAll().stream()
+                .filter(medicalRecord -> medicalRecord.getMedicId().equals(medicId))
+                .collect(Collectors.toList());
     }
 }

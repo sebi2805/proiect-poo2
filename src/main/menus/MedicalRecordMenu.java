@@ -12,6 +12,7 @@ import main.services.MedicService;
 import main.util.Option;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,119 +83,59 @@ public class MedicalRecordMenu extends EntityMenu<MedicalRecord> {
             waitForUserInput();
         }
     }
-
+    private LocalDate parseDate(String date) throws DateTimeParseException {
+        return LocalDate.parse(date);
+    }
     @Override
     protected void update() {
-        List<MedicalRecord> records = service.getAll();
-        if (records.isEmpty()) {
-            System.out.println("No medical records available to update.");
-            waitForUserInput();
+        MedicalRecord record = chooseMedicalRecord();
+        if (record == null) {
             return;
         }
 
-        // Display all medical records
-        for (int i = 0; i < records.size(); i++) {
-            System.out.printf("%d. %s | %s\n", i + 1, records.get(i).getVisitDate(), clientService.getById(records.get(i).getClientId()).map(Client::getName).orElse("Unknown Client"));
-        }
-
-        // Let the user select a medical record by its index
-        System.out.print("Select a medical record to update (enter the number): ");
-        int recordIndex;
-        try {
-            recordIndex = Integer.parseInt(scanner.nextLine()) - 1;
-            if (recordIndex < 0 || recordIndex >= records.size()) {
-                System.out.println("Invalid selection. Please try again.");
-                waitForUserInput();
-                return;
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Please enter a valid number.");
-            waitForUserInput();
-            return;
-        }
-
-        MedicalRecord record = records.get(recordIndex);
         System.out.println("Current details: " + getDetailedMedicalRecord(record));
 
-        String clientIdInput = scanner.nextLine();
-        if (!clientIdInput.isEmpty()) {
+        try {
             String newClientId = getUserChoice(clientService.getOptions(), "Select new Client ID (leave blank to keep current):");
             if (newClientId != null) {
                 record.setClientId(newClientId);
             }
-        }
 
-        String medicIdInput = scanner.nextLine();
-        if (!medicIdInput.isEmpty()) {
             String newMedicId = getUserChoice(medicService.getOptions(), "Select new Medic ID (leave blank to keep current):");
             if (newMedicId != null) {
                 record.setMedicId(newMedicId);
             }
-        }
 
-        System.out.print("Enter new Visit Date (leave blank to keep current): ");
-        String visitDateInput = scanner.nextLine();
-        if (!visitDateInput.isEmpty()) {
-            try {
-                record.setVisitDate(LocalDate.parse(visitDateInput));
-            } catch (Exception e) {
-                System.out.println("Error: Invalid date format.");
-                waitForUserInput();
-                return;
+            System.out.print("Enter new Visit Date (leave blank to keep current): ");
+            String visitDateInput = scanner.nextLine();
+            if (!visitDateInput.isEmpty()) {
+                record.setVisitDate(parseDate(visitDateInput));
             }
-        }
 
-        System.out.print("Enter new Notes (leave blank to keep current): ");
-        String notes = scanner.nextLine();
-        if (!notes.isEmpty()) record.setNotes(notes);
+            System.out.print("Enter new Notes (leave blank to keep current): ");
+            String notes = scanner.nextLine();
+            if (!notes.isEmpty()) record.setNotes(notes);
 
-        try {
             service.update(record);
             System.out.println("Medical Record updated successfully.");
+        } catch (DateTimeParseException e) {
+            System.out.println("Error: Invalid date format. Please enter the date in YYYY-MM-DD format.");
         } catch (NotFoundException e) {
             System.out.println("Error: Medical Record not found.");
+        } catch (Exception e) {
+            System.out.println("Error: Invalid input. Please try again.");
         }
 
         waitForUserInput();
     }
 
-
-
     @Override
     protected void delete() {
-        List<MedicalRecord> records = service.getAll();
-        if (records.isEmpty()) {
-            System.out.println("No medical records available to delete.");
-            waitForUserInput();
+        MedicalRecord record = chooseMedicalRecord();
+        if (record == null) {
             return;
         }
 
-        for (int i = 0; i < records.size(); i++) {
-            MedicalRecord record = records.get(i);
-            System.out.printf("%d. %s | %s | %s\n",
-                    i + 1,
-                    record.getVisitDate(),
-                    clientService.getById(record.getClientId()).map(Client::getName).orElse("Unknown Client"),
-                    medicService.getById(record.getMedicId()).map(Medic::getName).orElse("Unknown Medic"));
-        }
-
-        // Let the user select a medical record by its index
-        System.out.print("Select a medical record to delete (enter the number): ");
-        int recordIndex;
-        try {
-            recordIndex = Integer.parseInt(scanner.nextLine()) - 1;
-            if (recordIndex < 0 || recordIndex >= records.size()) {
-                System.out.println("Invalid selection. Please try again.");
-                waitForUserInput();
-                return;
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Please enter a valid number.");
-            waitForUserInput();
-            return;
-        }
-
-        MedicalRecord record = records.get(recordIndex);
         try {
             service.delete(record.getId());
             System.out.println("Medical Record deleted successfully.");
@@ -229,5 +170,31 @@ public class MedicalRecordMenu extends EntityMenu<MedicalRecord> {
         sb.append("Visit Date: ").append(record.getVisitDate()).append("\n");
         sb.append("Notes: ").append(record.getNotes());
         return sb.toString();
+    }
+    private MedicalRecord chooseMedicalRecord() {
+        List<MedicalRecord> records = service.getAll();
+        if (records.isEmpty()) {
+            System.out.println("No medical records available.");
+            waitForUserInput();
+            return null;
+        }
+
+        // Display all medical records
+        for (int i = 0; i < records.size(); i++) {
+            MedicalRecord record = records.get(i);
+            System.out.printf("%d. %s | %s | %s\n",
+                    i + 1,
+                    record.getVisitDate(),
+                    clientService.getById(record.getClientId()).map(Client::getName).orElse("Unknown Client"),
+                    medicService.getById(record.getMedicId()).map(Medic::getName).orElse("Unknown Medic"));
+        }
+
+        // Let the user select a medical record by its index
+        int recordIndex = getUserIndexInput(records.size(), "Select a medical record (enter the number): ");
+        if (recordIndex == -1) {
+            return null;
+        }
+
+        return records.get(recordIndex);
     }
 }

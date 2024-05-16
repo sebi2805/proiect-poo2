@@ -1,5 +1,6 @@
 package main.services;
 
+import main.entities.Appointment;
 import main.entities.AppointmentOption;
 import main.entities.Medic;
 import main.entities.RegularAppointment;
@@ -119,4 +120,19 @@ public class ScheduleService extends BaseService<RegularAppointment> {
 
         return availableOptions;
     }
+
+    public List<RegularAppointment> getAppointmentsByClientId(String clientId) {
+        List<RegularAppointment> regularAppointments = fileService.getRegularAppointmentManager().findAll().stream()
+                .filter(appointment -> appointment.getClientId().equals(clientId))
+                .collect(Collectors.toList());
+        return regularAppointments;
+    }
+    public List<RegularAppointment> getAppointmentsByMedicId(String medicId) {
+        List<RegularAppointment> regularAppointments = fileService.getRegularAppointmentManager().findAll().stream()
+                .filter(appointment -> appointment.getMedicId().equals(medicId))
+                .collect(Collectors.toList());
+        return regularAppointments;
+    }
+
+
 }

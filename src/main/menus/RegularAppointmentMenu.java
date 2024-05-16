@@ -9,8 +9,10 @@ import main.exceptions.AlreadyExistsException;
 import main.exceptions.NotFoundException;
 import main.services.ScheduleService;
 import main.services.ServiceManager;
+import main.util.Option;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,10 +37,15 @@ public class RegularAppointmentMenu extends EntityMenu<RegularAppointment> {
     @Override
     protected void displayAll() {
         List<RegularAppointment> appointments = service.getAll();
-        for (RegularAppointment appointment : appointments) {
-            System.out.println(appointment);
-            System.out.println("\n");
+        if (appointments.isEmpty()) {
+            System.out.println("No regular appointments found.");
+        } else {
+            for (RegularAppointment appointment : appointments) {
+                System.out.println(appointment);
+                System.out.println("\n");
+            }
         }
+        waitForUserInput();
     }
 
     @Override
@@ -50,94 +57,68 @@ public class RegularAppointmentMenu extends EntityMenu<RegularAppointment> {
                 System.out::println,
                 () -> System.out.println("Regular Appointment not found.")
         );
+        waitForUserInput();
     }
 
     @Override
     protected void add() {
-        System.out.print("Enter Client ID: ");
-        String clientId = scanner.nextLine();
-        Optional<Client> client = ServiceManager.getClientService().getById(clientId);
-        if (client.isEmpty()) {
-            System.out.println("Error: Client not found.");
-            return;
-        }
-
-        System.out.print("Enter Medic ID: ");
-        String medicId = scanner.nextLine();
-        Optional<Medic> medic = ServiceManager.getMedicService().getById(medicId);
-        if (medic.isEmpty()) {
-            System.out.println("Error: Medic not found.");
-            return;
-        }
-
-        System.out.print("Enter Appointment Date and Time (YYYY-MM-DDTHH:MM): ");
-        LocalDateTime appointmentDate = LocalDateTime.parse(scanner.nextLine());
-
-        System.out.print("Enter Appointment Status (SCHEDULED, CONFIRMED, CANCELLED): ");
-        AppointmentStatus status;
         try {
-            status = AppointmentStatus.valueOf(scanner.nextLine().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            System.out.println("Invalid status. Regular Appointment not added.");
-            return;
-        }
+            String clientId = getUserChoice(ServiceManager.getClientService().getOptions(), "Select Client:");
+            String medicId = getUserChoice(ServiceManager.getMedicService().getOptions(), "Select Medic:");
+            LocalDateTime appointmentDate = getAppointmentDate();
 
-        System.out.print("Enter Appointment Frequency (DAILY, WEEKLY, MONTHLY): ");
-        AppointmentFrequency frequency;
-        try {
-            frequency = AppointmentFrequency.valueOf(scanner.nextLine().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            System.out.println("Invalid frequency. Regular Appointment not added.");
-            return;
-        }
+            System.out.print("Enter Appointment Status (SCHEDULED, CONFIRMED, CANCELLED): ");
+            AppointmentStatus status;
+            try {
+                status = AppointmentStatus.valueOf(scanner.nextLine().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid status. Regular Appointment not added.");
+                return;
+            }
 
-        RegularAppointment appointment = new RegularAppointment(client.get().getId(), medic.get().getId(), appointmentDate, status, frequency);
-        try {
-            service.add(appointment);
-            System.out.println("Regular Appointment added successfully.");
-        } catch (AlreadyExistsException e) {
-            System.out.println("Error: Regular Appointment already exists.");
+            System.out.print("Enter Appointment Frequency (DAILY, WEEKLY, MONTHLY): ");
+            AppointmentFrequency frequency;
+            try {
+                frequency = AppointmentFrequency.valueOf(scanner.nextLine().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid frequency. Regular Appointment not added.");
+                return;
+            }
+
+            RegularAppointment appointment = new RegularAppointment(clientId, medicId, appointmentDate, status, frequency);
+            try {
+                service.add(appointment);
+                System.out.println("Regular Appointment added successfully.");
+            } catch (AlreadyExistsException e) {
+                System.out.println("Error: Regular Appointment already exists.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error: Invalid input. Please try again.");
+        } finally {
+            waitForUserInput();
         }
     }
 
     @Override
     protected void update() {
-        List<RegularAppointment> appointments = service.getAll();
-        if (appointments.isEmpty()) {
-            System.out.println("No regular appointments available to update.");
-            waitForUserInput();
+        RegularAppointment appointment = chooseRegularAppointment();
+        if (appointment == null) {
             return;
         }
 
-        // Display all regular appointments
-        for (int i = 0; i < appointments.size(); i++) {
-            System.out.printf("%d. %s\n", i + 1, appointments.get(i));
-        }
-
-        // Let the user select a regular appointment by its index
-        System.out.print("Select a regular appointment to update (enter the number): ");
-        int appointmentIndex;
-        try {
-            appointmentIndex = Integer.parseInt(scanner.nextLine()) - 1;
-            if (appointmentIndex < 0 || appointmentIndex >= appointments.size()) {
-                System.out.println("Invalid selection. Please try again.");
-                waitForUserInput();
-                return;
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Please enter a valid number.");
-            waitForUserInput();
-            return;
-        }
-
-        RegularAppointment appointment = appointments.get(appointmentIndex);
         System.out.println("Current details: " + appointment);
 
         System.out.print("Enter new Appointment Date and Time (leave blank to keep current): ");
         String appointmentDateInput = scanner.nextLine();
         if (!appointmentDateInput.isEmpty()) {
-            LocalDateTime appointmentDate = LocalDateTime.parse(appointmentDateInput);
-            appointment.setAppointmentDate(appointmentDate);
+            try {
+                LocalDateTime appointmentDate = LocalDateTime.parse(appointmentDateInput);
+                appointment.setAppointmentDate(appointmentDate);
+            } catch (DateTimeParseException e) {
+                System.out.println("Error: Invalid date and time format.");
+                waitForUserInput();
+                return;
+            }
         }
 
         System.out.print("Enter new Appointment Status (leave blank to keep current): ");
@@ -166,6 +147,18 @@ public class RegularAppointmentMenu extends EntityMenu<RegularAppointment> {
             }
         }
 
+        System.out.print("Enter new Client ID (leave blank to keep current): ");
+        String newClientId = getUserChoice(ServiceManager.getClientService().getOptions(), "Select new Client:");
+        if (newClientId != null) {
+            appointment.setClientId(newClientId);
+        }
+
+        System.out.print("Enter new Medic ID (leave blank to keep current): ");
+        String newMedicId = getUserChoice(ServiceManager.getMedicService().getOptions(), "Select new Medic:");
+        if (newMedicId != null) {
+            appointment.setMedicId(newMedicId);
+        }
+
         try {
             service.update(appointment);
             System.out.println("Regular Appointment updated successfully.");
@@ -176,38 +169,13 @@ public class RegularAppointmentMenu extends EntityMenu<RegularAppointment> {
         waitForUserInput();
     }
 
-
     @Override
     protected void delete() {
-        List<RegularAppointment> appointments = service.getAll();
-        if (appointments.isEmpty()) {
-            System.out.println("No regular appointments available to delete.");
-            waitForUserInput();
+        RegularAppointment appointment = chooseRegularAppointment();
+        if (appointment == null) {
             return;
         }
 
-        // Display all regular appointments
-        for (int i = 0; i < appointments.size(); i++) {
-            System.out.printf("%d. %s\n", i + 1, appointments.get(i));
-        }
-
-        // Let the user select a regular appointment by its index
-        System.out.print("Select a regular appointment to delete (enter the number): ");
-        int appointmentIndex;
-        try {
-            appointmentIndex = Integer.parseInt(scanner.nextLine()) - 1;
-            if (appointmentIndex < 0 || appointmentIndex >= appointments.size()) {
-                System.out.println("Invalid selection. Please try again.");
-                waitForUserInput();
-                return;
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Please enter a valid number.");
-            waitForUserInput();
-            return;
-        }
-
-        RegularAppointment appointment = appointments.get(appointmentIndex);
         try {
             service.delete(appointment.getId());
             System.out.println("Regular Appointment deleted successfully.");
@@ -218,4 +186,30 @@ public class RegularAppointmentMenu extends EntityMenu<RegularAppointment> {
         waitForUserInput();
     }
 
+    private LocalDateTime getAppointmentDate() {
+        System.out.print("Enter Appointment Date and Time (YYYY-MM-DDTHH:MM): ");
+        return LocalDateTime.parse(scanner.nextLine());
+    }
+
+    private RegularAppointment chooseRegularAppointment() {
+        List<RegularAppointment> appointments = service.getAll();
+        if (appointments.isEmpty()) {
+            System.out.println("No regular appointments available.");
+            waitForUserInput();
+            return null;
+        }
+
+        // Display all regular appointments
+        for (int i = 0; i < appointments.size(); i++) {
+            System.out.printf("%d. %s\n", i + 1, appointments.get(i));
+        }
+
+        // Let the user select a regular appointment by its index
+        int appointmentIndex = getUserIndexInput(appointments.size(), "Select a regular appointment (enter the number): ");
+        if (appointmentIndex == -1) {
+            return null;
+        }
+
+        return appointments.get(appointmentIndex);
+    }
 }
