@@ -26,6 +26,6 @@ public class Client extends Person {
         return "Client ID: " + getId() + "\n" +
                 "Name: " + getName() + "\n" +
                 "Phone: " + getPhone() + "\n" +
-                "Email: " + getEmail() + "\n";
+                "Email: " + getEmail();
     }
 }

@@ -7,7 +7,6 @@ public class ServiceManager {
     private static final MedicService medicService = MedicService.getInstance();
     private static final ScheduleService scheduleService = ScheduleService.getInstance();
     private static final MedicalRecordService medicalRecordService = MedicalRecordService.getInstance();
-
     private static ServiceManager instance;
     private ServiceManager() {}
     public synchronized static ServiceManager getInstance(){

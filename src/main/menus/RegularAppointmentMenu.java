@@ -1,9 +1,14 @@
 package main.menus;
 
+import main.entities.Appointment;
+import main.entities.Client;
+import main.entities.Medic;
 import main.entities.RegularAppointment;
 import main.enums.AppointmentFrequency;
 import main.exceptions.AlreadyExistsException;
 import main.exceptions.NotFoundException;
+import main.services.ClientService;
+import main.services.MedicService;
 import main.services.ScheduleService;
 import main.services.ServiceManager;
 import main.util.Option;
@@ -14,9 +19,12 @@ import java.util.List;
 import java.util.Optional;
 
 public class RegularAppointmentMenu extends EntityMenu<RegularAppointment> {
-
-    public RegularAppointmentMenu(ScheduleService service) {
+    private final ClientService clientService;
+    private final MedicService medicService;
+    public RegularAppointmentMenu(ScheduleService service, ClientService clientService, MedicService medicService) {
         super(service);
+        this.clientService = clientService;
+        this.medicService = medicService;
     }
 
     @Override
@@ -56,6 +64,25 @@ public class RegularAppointmentMenu extends EntityMenu<RegularAppointment> {
         );
         waitForUserInput();
     }
+    private AppointmentFrequency getFrequency() {
+        AppointmentFrequency[] frequencies = AppointmentFrequency.values();
+        System.out.println("Enter Appointment Frequency (choose one): ");
+        for (int i = 0; i < frequencies.length; i++) {
+            System.out.printf("%d. %s\n", i + 1, frequencies[i]);
+        }
+
+        int index = -1;
+        while (index < 1 || index > frequencies.length) {
+            System.out.print("Select the frequency (enter the number): ");
+            try {
+                index = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number.");
+            }
+        }
+
+        return frequencies[index - 1];
+    }
 
     @Override
     protected void add() {
@@ -64,11 +91,8 @@ public class RegularAppointmentMenu extends EntityMenu<RegularAppointment> {
             String medicId = getUserChoice(ServiceManager.getMedicService().getOptions(), "Select Medic:");
             LocalDateTime appointmentDate = getAppointmentDate();
 
-            System.out.print("Enter Appointment Frequency (DAILY, WEEKLY, MONTHLY): ");
-            AppointmentFrequency frequency;
-            try {
-                frequency = AppointmentFrequency.valueOf(scanner.nextLine().toUpperCase());
-            } catch (IllegalArgumentException e) {
+            AppointmentFrequency frequency = getFrequency();
+            if (frequency == null) {
                 System.out.println("Invalid frequency. Regular Appointment not added.");
                 return;
             }
@@ -174,8 +198,15 @@ public class RegularAppointmentMenu extends EntityMenu<RegularAppointment> {
             return null;
         }
         for (int i = 0; i < appointments.size(); i++) {
-            System.out.printf("%d. %s\n", i + 1, appointments.get(i));
+            Appointment appointment = appointments.get(i);
+            System.out.printf("%d. %s | %s | %s\n",
+                    i + 1,
+                    appointment.getAppointmentDate(),
+                    clientService.getById(appointment.getClientId()).map(Client::getName).orElse("Unknown Client"),
+                    medicService.getById(appointment.getMedicId()).map(Medic::getName).orElse("Unknown Medic")
+            );
         }
+
         int appointmentIndex = getUserIndexInput(appointments.size(), "Select a regular appointment (enter the number): ");
         if (appointmentIndex == -1) {
             return null;

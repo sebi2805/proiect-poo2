@@ -3,6 +3,7 @@ package main.services;
 import main.entities.Medic;
 import main.exceptions.AlreadyExistsException;
 import main.exceptions.NotFoundException;
+import main.storage.FileService;
 import main.util.Option;
 import main.util.SearchCriteriaPerson;
 
@@ -10,7 +11,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class MedicService extends BaseService<Medic> {
+public class MedicService implements BaseService<Medic> {
+    protected final FileService fileService = FileService.getInstance();
     private static MedicService instance;
 
     private MedicService() {

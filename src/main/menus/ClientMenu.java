@@ -73,6 +73,7 @@ public class ClientMenu extends EntityMenu<Client> {
             default:
                 System.out.println("Invalid choice. Please try again.");
         }
+        System.out.println("\n");
         return true;
     }
     @Override

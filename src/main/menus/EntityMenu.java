@@ -46,6 +46,7 @@ public abstract class EntityMenu<T> {
             default:
                 System.out.println("Invalid choice. Please try again.");
         }
+        System.out.println("\n");
         return true;
     }
 

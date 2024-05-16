@@ -9,17 +9,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public abstract class BaseService<T> {
-    protected final FileService fileService = FileService.getInstance();
+public interface BaseService<T> {
+    void add(T entity) throws AlreadyExistsException;
 
-    public abstract void add(T entity) throws AlreadyExistsException;
+    Optional<T> getById(String id);
 
-    public abstract Optional<T> getById(String id);
+    void update(T entity) throws NotFoundException;
 
-    public abstract void update(T entity) throws NotFoundException;
+    void delete(String id) throws NotFoundException;
 
-    public abstract void delete(String id) throws NotFoundException;
-
-    public abstract List<T> getAll();
-
+    List<T> getAll();
 }

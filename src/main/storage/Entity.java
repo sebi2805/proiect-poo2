@@ -78,7 +78,6 @@ public class Entity<T extends BaseEntity> {
             entity.setCreatedAt(LocalDateTime.now());
             entities.add(entity);
             entitiesMap.put(entity.getId(), entity);
-            System.out.println("insert");
             saveToCSV();
         } else {
             throw new AlreadyExistsException("Entity already exists with this id");

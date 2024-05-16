@@ -9,6 +9,7 @@ import main.exceptions.NotFoundException;
 import main.services.*;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -57,6 +58,7 @@ public class MedicMenu extends EntityMenu<Medic> {
             }
             default -> System.out.println("Invalid choice. Please try again.");
         }
+        System.out.println("\n");
         return true;
     }
 
@@ -106,8 +108,9 @@ public class MedicMenu extends EntityMenu<Medic> {
             System.out.println("Invalid specialty. Medic not added.");
             return;
         }
-        LocalTime workingHoursStart = LocalTime.parse(promptUser("Enter Working Hours Start (HH:MM): "));
-        LocalTime workingHoursEnd = LocalTime.parse(promptUser("Enter Working Hours End (HH:MM): "));
+
+        LocalTime workingHoursStart = promptForLocalTime("Enter Working Hours Start (HH:MM): ");
+        LocalTime workingHoursEnd = promptForLocalTime("Enter Working Hours End (HH:MM): ");
 
         try {
             Medic medic = new Medic(name, phone, email, specialty, workingHoursStart, workingHoursEnd);
@@ -120,6 +123,23 @@ public class MedicMenu extends EntityMenu<Medic> {
         }
     }
 
+    private LocalTime promptForLocalTime(String prompt) {
+        Scanner scanner = new Scanner(System.in);
+        LocalTime time = null;
+        boolean validInput = false;
+
+        while (!validInput) {
+            System.out.print(prompt);
+            try {
+                time = LocalTime.parse(scanner.nextLine());
+                validInput = true;
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid time format. Please enter time in HH:MM format.");
+            }
+        }
+
+        return time;
+    }
     @Override
     protected void update() {
         Medic medic = chooseMedic();
@@ -170,13 +190,13 @@ public class MedicMenu extends EntityMenu<Medic> {
 
         String workingHoursStartInput = promptUser("Enter new Working Hours Start (leave blank to keep current): ");
         if (!workingHoursStartInput.isEmpty()) {
-            LocalTime workingHoursStart = LocalTime.parse(workingHoursStartInput);
+            LocalTime workingHoursStart = promptForLocalTime("Enter Working Hours Start (HH:MM): ");
             medic.setWorkingHoursStart(workingHoursStart);
         }
 
         String workingHoursEndInput = promptUser("Enter new Working Hours End (leave blank to keep current): ");
         if (!workingHoursEndInput.isEmpty()) {
-            LocalTime workingHoursEnd = LocalTime.parse(workingHoursEndInput);
+            LocalTime workingHoursEnd = promptForLocalTime("Enter Working Hours End (HH:MM): ");
             medic.setWorkingHoursEnd(workingHoursEnd);
         }
 

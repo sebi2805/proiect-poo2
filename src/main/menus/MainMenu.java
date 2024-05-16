@@ -29,7 +29,7 @@ public class MainMenu {
                     new MedicalRecordMenu(medicalRecordService, clientService, medicService).displayMenu();
                     break;
                 case 4:
-                    new RegularAppointmentMenu(scheduleService).displayMenu();
+                    new RegularAppointmentMenu(scheduleService, clientService, medicService).displayMenu();
                     break;
                 case 5:
                     new OneTimeAppointmentMenu(appointmentService, clientService, medicService).displayMenu();

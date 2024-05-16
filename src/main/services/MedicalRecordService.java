@@ -4,12 +4,14 @@ import main.entities.MedicalRecord;
 import main.entities.RegularAppointment;
 import main.exceptions.AlreadyExistsException;
 import main.exceptions.NotFoundException;
+import main.storage.FileService;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class MedicalRecordService extends BaseService<MedicalRecord> {
+public class MedicalRecordService implements BaseService<MedicalRecord> {
+    protected final FileService fileService = FileService.getInstance();
 
     private static MedicalRecordService instance;
 

@@ -3,6 +3,7 @@ package main.services;
 import main.entities.Client;
 import main.exceptions.AlreadyExistsException;
 import main.exceptions.NotFoundException;
+import main.storage.FileService;
 import main.util.Option;
 import main.util.SearchCriteriaPerson;
 
@@ -10,7 +11,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class ClientService extends BaseService<Client> {
+public class ClientService implements BaseService<Client> {
+    protected final FileService fileService = FileService.getInstance();
 
     private static ClientService instance;
 

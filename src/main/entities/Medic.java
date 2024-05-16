@@ -1,18 +1,25 @@
 package main.entities;
 
+import com.opencsv.bean.CsvCustomBindByPosition;
 import main.enums.MedicalSpecialty;
 import main.exceptions.InvalidEmailFormatException;
 import main.exceptions.InvalidPhoneNumberException;
+import main.util.LocalTimeConverter;
+import main.util.MedicalSpecialtyConverter;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Medic extends Person {
+    @CsvCustomBindByPosition(position = 7, converter = MedicalSpecialtyConverter.class)
     private MedicalSpecialty specialty;
+
+    @CsvCustomBindByPosition(position = 8, converter = LocalTimeConverter.class)
     private LocalTime workingHoursStart;
+
+    @CsvCustomBindByPosition(position = 9, converter = LocalTimeConverter.class)
     private LocalTime workingHoursEnd;
-    private List<Appointment> appointments;
 
     public Medic(String name, String phone, String email, MedicalSpecialty specialty,
                  LocalTime workingHoursStart, LocalTime workingHoursEnd)
@@ -21,22 +28,9 @@ public class Medic extends Person {
         this.workingHoursStart = workingHoursStart;
         this.workingHoursEnd = workingHoursEnd;
         this.specialty = specialty;
-        this.appointments = new ArrayList<>();
     }
     public Medic(){
         super();
-    }
-
-    public void addAppointment(Appointment appointment) {
-        if (appointment != null) {
-            this.appointments.add(appointment);
-        }
-    }
-
-    public void removeAppointment(Appointment appointment) {
-        if (appointment != null) {
-            this.appointments.remove(appointment);
-        }
     }
 
     public MedicalSpecialty getSpecialty() {
@@ -45,10 +39,6 @@ public class Medic extends Person {
 
     public void setSpecialty(MedicalSpecialty specialty) {
         this.specialty = specialty;
-    }
-
-    public List<Appointment> getAppointments() {
-        return appointments;
     }
 
     @Override

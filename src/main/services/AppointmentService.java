@@ -13,14 +13,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class AppointmentService extends BaseService<OneTimeAppointment> {
-
+public class AppointmentService implements BaseService<OneTimeAppointment> {
+    protected final FileService fileService = FileService.getInstance();
     private static AppointmentService instance;
-    private final FileService fileService;
 
     private AppointmentService() {
         super();
-        this.fileService = FileService.getInstance();
     }
 
     public synchronized static AppointmentService getInstance() {

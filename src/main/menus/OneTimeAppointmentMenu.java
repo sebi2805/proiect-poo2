@@ -120,6 +120,7 @@ public class OneTimeAppointmentMenu extends EntityMenu<OneTimeAppointment> {
             default:
                 System.out.println("Invalid choice. Please try again.");
         }
+        System.out.println("\n");
         return true;
     }
     @Override

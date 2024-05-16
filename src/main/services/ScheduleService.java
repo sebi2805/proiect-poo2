@@ -16,7 +16,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class ScheduleService extends BaseService<RegularAppointment> {
+public class ScheduleService implements BaseService<RegularAppointment> {
+
+    protected final FileService fileService = FileService.getInstance();
     private static ScheduleService instance;
 
     private ScheduleService() {
