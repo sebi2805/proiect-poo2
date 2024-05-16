@@ -31,12 +31,14 @@ public class OneTimeAppointmentMenu extends EntityMenu<OneTimeAppointment> {
 
     @Override
     protected void printMenuOptions() {
-        System.out.println("One-Time Appointment Menu:");
+        System.out.println("\nOne-Time Appointment Menu:");
         System.out.println("1. Display all One-Time Appointments");
         System.out.println("2. Search One-Time Appointment by ID");
         System.out.println("3. Add One-Time Appointment");
         System.out.println("4. Update One-Time Appointment");
         System.out.println("5. Delete One-Time Appointment");
+        System.out.println("6. Confirm One-Time Appointment");
+        System.out.println("7. Cancel One-Time Appointment");
         System.out.println("0. Back to Main Menu");
         System.out.print("Enter your choice: ");
     }
@@ -89,7 +91,37 @@ public class OneTimeAppointmentMenu extends EntityMenu<OneTimeAppointment> {
             waitForUserInput();
         }
     }
-
+    @Override
+    protected boolean handleMenuChoice(int choice) {
+        switch (choice) {
+            case 1:
+                displayAll();
+                break;
+            case 2:
+                searchById();
+                break;
+            case 3:
+                add();
+                break;
+            case 4:
+                update();
+                break;
+            case 5:
+                delete();
+                break;
+            case 6:
+                confirmAppointment();
+                break;
+            case 7:
+                cancelAppointment();
+                break;
+            case 0:
+                return false;
+            default:
+                System.out.println("Invalid choice. Please try again.");
+        }
+        return true;
+    }
     @Override
     protected void update() {
         OneTimeAppointment appointment = chooseOneTimeAppointment();
@@ -161,14 +193,12 @@ public class OneTimeAppointmentMenu extends EntityMenu<OneTimeAppointment> {
         StringBuilder sb = new StringBuilder();
         sb.append("Appointment ID: ").append(appointment.getId()).append("\n");
 
-        // Fetching client details
         Optional<Client> client = clientService.getById(appointment.getClientId());
         client.ifPresentOrElse(
                 value -> sb.append("Client: ").append(value.getName()).append(" (ID: ").append(value.getId()).append(")\n"),
                 () -> sb.append("Client ID: ").append(appointment.getClientId()).append(" (Details not found)\n")
         );
 
-        // Fetching medic details
         Optional<Medic> medic = medicService.getById(appointment.getMedicId());
         medic.ifPresentOrElse(
                 value -> sb.append("Medic: ").append(value.getName()).append(" (ID: ").append(value.getId()).append(")\n"),
@@ -188,7 +218,6 @@ public class OneTimeAppointmentMenu extends EntityMenu<OneTimeAppointment> {
             return null;
         }
 
-        // Display all one-time appointments
         for (int i = 0; i < appointments.size(); i++) {
             Appointment appointment = appointments.get(i);
             System.out.printf("%d. %s | %s | %s\n",
@@ -199,12 +228,44 @@ public class OneTimeAppointmentMenu extends EntityMenu<OneTimeAppointment> {
             );
         }
 
-        // Let the user select a one-time appointment by its index
         int appointmentIndex = getUserIndexInput(appointments.size(), "Select a one-time appointment (enter the number): ");
         if (appointmentIndex == -1) {
             return null;
         }
 
         return appointments.get(appointmentIndex);
+    }
+    private void confirmAppointment() {
+        OneTimeAppointment appointment = chooseOneTimeAppointment();
+        if (appointment == null) {
+            return;
+        }
+
+        appointment.confirmAppointment();
+        try {
+            service.update(appointment);
+            System.out.println("One-Time Appointment confirmed successfully.");
+        } catch (NotFoundException e) {
+            System.out.println("Error: One-Time Appointment not found.");
+        }
+
+        waitForUserInput();
+    }
+
+    private void cancelAppointment() {
+        OneTimeAppointment appointment = chooseOneTimeAppointment();
+        if (appointment == null) {
+            return;
+        }
+
+        appointment.cancelAppointment();
+        try {
+            service.update(appointment);
+            System.out.println("One-Time Appointment cancelled successfully.");
+        } catch (NotFoundException e) {
+            System.out.println("Error: One-Time Appointment not found.");
+        }
+
+        waitForUserInput();
     }
 }

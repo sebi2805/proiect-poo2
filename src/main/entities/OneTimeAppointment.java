@@ -16,13 +16,11 @@ public class OneTimeAppointment extends Appointment {
     public OneTimeAppointment() {
         super();
     }
-    @Override
     public void confirmAppointment() {
         System.out.println("One-Time Appointment confirmed for " + appointmentDate);
         this.status = AppointmentStatus.CONFIRMED;
     }
 
-    @Override
     public void cancelAppointment() {
         System.out.println("One-Time Appointment on " + appointmentDate + " cancelled.");
         this.status = AppointmentStatus.CANCELED;
@@ -35,7 +33,8 @@ public class OneTimeAppointment extends Appointment {
         this.status = status;
     }
     @Override
-    public String toString(){
-        return super.toString();
+    public String toString() {
+        return super.toString() +
+                "Status: " + status + "\n";
     }
 }

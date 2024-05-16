@@ -11,13 +11,13 @@ public class RegularAppointment extends Appointment {
     @CsvBindByPosition(position = 8)
     private AppointmentFrequency frequency;
 
-    // Constructor
     public RegularAppointment(String clientId, String medicId, LocalDateTime appointmentDate, AppointmentFrequency frequency) {
         super(clientId, medicId, appointmentDate);
         this.frequency = frequency;
     }
-
-    // Getter and Setter for frequency
+    public RegularAppointment(){
+        super();
+    }
     public AppointmentFrequency getFrequency() {
         return frequency;
     }
@@ -25,17 +25,9 @@ public class RegularAppointment extends Appointment {
     public void setFrequency(AppointmentFrequency frequency) {
         this.frequency = frequency;
     }
-
-    // Implementing abstract methods from Appointment
     @Override
-    public void confirmAppointment() {
-        System.out.println("Regular Appointment confirmed for " + appointmentDate + " with frequency " + frequency);
-        // Additional logic specific to confirming a regular appointment can be added here
-    }
-
-    @Override
-    public void cancelAppointment() {
-        System.out.println("Regular Appointment on " + appointmentDate + " cancelled.");
-        // Additional logic specific to cancelling a regular appointment can be added here
+    public String toString() {
+        return super.toString() +
+                "Frequency: " + frequency + "\n";
     }
 }

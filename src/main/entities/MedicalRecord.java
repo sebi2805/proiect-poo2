@@ -20,7 +20,6 @@ public class MedicalRecord
     private String notes;
 
 
-    // Constructor
     public MedicalRecord( String clientId, String medicId, LocalDate visitDate, String notes)
             throws FutureDateException {
         super();
@@ -38,7 +37,6 @@ public class MedicalRecord
     public int compareTo(MedicalRecord other){
         return visitDate.compareTo(other.visitDate);
     }
-    // Getters and Setters with lazy loading for Medic and Client
     public String getClientId() {
         return clientId;
     }

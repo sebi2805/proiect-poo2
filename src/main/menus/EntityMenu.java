@@ -19,13 +19,9 @@ public abstract class EntityMenu<T> {
         while (running) {
             printMenuOptions();
             int choice = scanner.nextInt();
-            System.out.println(choice);
             scanner.nextLine();
             running = handleMenuChoice(choice);
-            System.out.println(running);
-            System.out.println("\n");
         }
-        return;
     }
 
     protected boolean handleMenuChoice(int choice) {

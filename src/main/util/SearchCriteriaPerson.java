@@ -5,7 +5,6 @@ public class SearchCriteriaPerson {
     private String email;
     private String phone;
 
-    // Constructor, getters și setters
     public SearchCriteriaPerson(String name, String email, String phone) {
         this.name = name;
         this.email = email;
@@ -38,6 +37,4 @@ public class SearchCriteriaPerson {
         this.email = email;
     }
 
-    // Getters și setters
-    // ...
 }

@@ -1,11 +1,8 @@
 package main.entities;
 
-import com.opencsv.bean.CsvBindByPosition;
 import main.exceptions.InvalidEmailFormatException;
 import main.exceptions.InvalidPhoneNumberException;
 
-import java.util.Arrays;
-import java.util.List;
 
 public class Client extends Person {
 

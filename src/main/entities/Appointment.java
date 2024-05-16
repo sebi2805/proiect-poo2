@@ -52,9 +52,6 @@ public abstract class Appointment extends BaseEntity implements Comparable<Appoi
         this.medicId = medicId;
     }
 
-    public abstract void confirmAppointment();
-    public abstract void cancelAppointment();
-
     @Override
     public String toString() {
         return "Appointment ID: " + getId() + "\n" +

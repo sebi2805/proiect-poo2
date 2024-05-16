@@ -58,14 +58,12 @@ public class MedicService extends BaseService<Medic> {
         return fileService.getMedicManager().findAll();
     }
 
-    // Method to search medics based on criteria
     public List<Medic> searchMedics(SearchCriteriaPerson criteria) {
         return getAll().stream()
                 .filter(medic -> matchesCriteria(medic, criteria))
                 .collect(Collectors.toList());
     }
 
-    // Helper method to check if a medic matches the given criteria
     private boolean matchesCriteria(Medic medic, SearchCriteriaPerson criteria) {
         boolean matchesName = criteria.getName() == null || medic.getName().toLowerCase().contains(criteria.getName().toLowerCase());
         boolean matchesEmail = criteria.getEmail() == null || medic.getEmail().toLowerCase().equals(criteria.getEmail().toLowerCase());

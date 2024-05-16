@@ -19,7 +19,6 @@ public abstract class BaseEntity {
     @CsvDate("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS")
     protected LocalDateTime deletedAt;
 
-    // Constructor
     public BaseEntity(String id) {
         this.id = id;
     }
@@ -27,7 +26,6 @@ public abstract class BaseEntity {
         this.id = UUID.randomUUID().toString(); 
     }
 
-    // Getters and Setters
     public String getId() {
         return id;
     }

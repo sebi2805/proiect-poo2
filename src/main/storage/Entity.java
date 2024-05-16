@@ -45,12 +45,12 @@ public class Entity<T extends BaseEntity> {
                     .withMappingStrategy(strategy)
                     .build();
 
-            entities = new ArrayList<>(); // Asigură-te că lista este curățată sau reinițializată aici
-            entitiesMap = new HashMap<>(); // De asemenea, reinițializează map-ul, dacă este utilizat
+            entities = new ArrayList<>();
+            entitiesMap = new HashMap<>();
 
             for (T entity : csvToBean.parse()) {
                 entities.add(entity);
-                entitiesMap.put(entity.getId(), entity); // Atenție la ID-uri duplicate
+                entitiesMap.put(entity.getId(), entity);
             }
         } catch (IOException e) {
 
@@ -62,7 +62,6 @@ public class Entity<T extends BaseEntity> {
     }
 
 
-    // Save objects from the entities list back into the CSV file
     public void saveToCSV() {
         try (Writer writer = new FileWriter(csvFilePath)) {
             StatefulBeanToCsv<T> beanToCsv = new StatefulBeanToCsvBuilder<T>(writer).build();
@@ -71,14 +70,6 @@ public class Entity<T extends BaseEntity> {
             e.printStackTrace();
         }
     }
-//    public Optional<T> findById(String id) {
-//        for( T entity : entities){
-//            if(entity.getId().equals(id)){
-//                return Optional.of(entity);
-//            }
-//        }
-//        return Optional.empty();
-//    }
     public Optional<T> findById(String id) {
         return Optional.ofNullable(entitiesMap.get(id));
     }
@@ -87,6 +78,7 @@ public class Entity<T extends BaseEntity> {
             entity.setCreatedAt(LocalDateTime.now());
             entities.add(entity);
             entitiesMap.put(entity.getId(), entity);
+            System.out.println("insert");
             saveToCSV();
         } else {
             throw new AlreadyExistsException("Entity already exists with this id");

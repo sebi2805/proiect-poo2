@@ -28,7 +28,7 @@ public class MedicalRecordMenu extends EntityMenu<MedicalRecord> {
 
     @Override
     protected void printMenuOptions() {
-        System.out.println("Medical Record Menu:");
+        System.out.println("\nMedical Record Menu:");
         System.out.println("1. Display all Medical Records");
         System.out.println("2. Search Medical Record by ID");
         System.out.println("3. Add Medical Record");
@@ -151,7 +151,6 @@ public class MedicalRecordMenu extends EntityMenu<MedicalRecord> {
         StringBuilder sb = new StringBuilder();
         sb.append("Medical Record ID: ").append(record.getId()).append("\n");
 
-        // Fetching client details
         Optional<Client> client = clientService.getById(record.getClientId());
         if (client.isPresent()) {
             sb.append("Client: ").append(client.get().getName()).append(" (ID: ").append(client.get().getId()).append(")\n");
@@ -159,7 +158,6 @@ public class MedicalRecordMenu extends EntityMenu<MedicalRecord> {
             sb.append("Client ID: ").append(record.getClientId()).append(" (Details not found)\n");
         }
 
-        // Fetching medic details
         Optional<Medic> medic = medicService.getById(record.getMedicId());
         if (medic.isPresent()) {
             sb.append("Medic: ").append(medic.get().getName()).append(" (ID: ").append(medic.get().getId()).append(")\n");
@@ -179,7 +177,6 @@ public class MedicalRecordMenu extends EntityMenu<MedicalRecord> {
             return null;
         }
 
-        // Display all medical records
         for (int i = 0; i < records.size(); i++) {
             MedicalRecord record = records.get(i);
             System.out.printf("%d. %s | %s | %s\n",
@@ -189,7 +186,6 @@ public class MedicalRecordMenu extends EntityMenu<MedicalRecord> {
                     medicService.getById(record.getMedicId()).map(Medic::getName).orElse("Unknown Medic"));
         }
 
-        // Let the user select a medical record by its index
         int recordIndex = getUserIndexInput(records.size(), "Select a medical record (enter the number): ");
         if (recordIndex == -1) {
             return null;

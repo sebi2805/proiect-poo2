@@ -1,7 +1,5 @@
 package main.menus;
 
-import main.entities.Client;
-import main.entities.Medic;
 import main.entities.RegularAppointment;
 import main.enums.AppointmentFrequency;
 import main.exceptions.AlreadyExistsException;
@@ -23,7 +21,7 @@ public class RegularAppointmentMenu extends EntityMenu<RegularAppointment> {
 
     @Override
     protected void printMenuOptions() {
-        System.out.println("Regular Appointment Menu:");
+        System.out.println("\nRegular Appointment Menu:");
         System.out.println("1. Display all Regular Appointments");
         System.out.println("2. Search Regular Appointment by ID");
         System.out.println("3. Add Regular Appointment");
@@ -175,13 +173,9 @@ public class RegularAppointmentMenu extends EntityMenu<RegularAppointment> {
             waitForUserInput();
             return null;
         }
-
-        // Display all regular appointments
         for (int i = 0; i < appointments.size(); i++) {
             System.out.printf("%d. %s\n", i + 1, appointments.get(i));
         }
-
-        // Let the user select a regular appointment by its index
         int appointmentIndex = getUserIndexInput(appointments.size(), "Select a regular appointment (enter the number): ");
         if (appointmentIndex == -1) {
             return null;

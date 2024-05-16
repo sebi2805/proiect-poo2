@@ -2,6 +2,7 @@ package main.entities;
 
 import java.time.LocalDateTime;
 
+// this class is used to compute if there are any empty spaces
 public class AppointmentOption {
     private final Medic medic;
     private final LocalDateTime startTime;
@@ -10,10 +11,9 @@ public class AppointmentOption {
     public AppointmentOption(Medic medic, LocalDateTime startTime) {
         this.medic = medic;
         this.startTime = startTime;
-        this.endTime = startTime.plusHours(1); // O programare durează maxim o oră
+        this.endTime = startTime.plusHours(1); // any appointment has maximum 1 hour
     }
 
-    // Getteri
     public Medic getMedic() {
         return medic;
     }
@@ -26,7 +26,6 @@ public class AppointmentOption {
         return endTime;
     }
 
-    // toString() pentru a facilita afișarea opțiunilor
     @Override
     public String toString() {
         return "AppointmentOption{" +

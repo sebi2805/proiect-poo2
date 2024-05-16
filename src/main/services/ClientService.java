@@ -14,12 +14,10 @@ public class ClientService extends BaseService<Client> {
 
     private static ClientService instance;
 
-    // Private constructor to prevent instantiation
     private ClientService() {
         super();
     }
 
-    // Public method to get the singleton instance
     public static synchronized ClientService getInstance() {
         if (instance == null) {
             instance = new ClientService();
@@ -27,7 +25,6 @@ public class ClientService extends BaseService<Client> {
         return instance;
     }
 
-    // Method to add a new client
     @Override
     public void add(Client client) throws AlreadyExistsException {
         Optional<Client> existingClient = getById(client.getId());
@@ -38,7 +35,6 @@ public class ClientService extends BaseService<Client> {
         System.out.println("Client successfully added.");
     }
 
-    // Method to retrieve a client by ID
     @Override
     public Optional<Client> getById(String clientId) {
         return fileService.getClientManager().findById(clientId);
@@ -73,7 +69,6 @@ public class ClientService extends BaseService<Client> {
                 .collect(Collectors.toList());
     }
 
-    // Helper method to check if a client matches the given criteria
     private boolean matchesCriteria(Client client, SearchCriteriaPerson criteria) {
         boolean matchesName = criteria.getName() == null || client.getName().toLowerCase().contains(criteria.getName().toLowerCase());
         boolean matchesEmail = criteria.getEmail() == null || client.getEmail().equalsIgnoreCase(criteria.getEmail());

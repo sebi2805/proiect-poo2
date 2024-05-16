@@ -28,7 +28,7 @@ public class MedicMenu extends EntityMenu<Medic> {
 
     @Override
     protected void printMenuOptions() {
-        System.out.println("Medic Menu:");
+        System.out.println("\nMedic Menu:");
         System.out.println("1. Display all Medics");
         System.out.println("2. Search Medic by ID");
         System.out.println("3. Add Medic");

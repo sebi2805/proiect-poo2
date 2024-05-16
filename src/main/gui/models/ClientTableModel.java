@@ -15,7 +15,7 @@ public class ClientTableModel extends AbstractTableModel {
 
     public void setClients(List<Client> clients) {
         this.clients = clients;
-        fireTableDataChanged(); // Notifică JTable că datele au fost actualizate
+        fireTableDataChanged(); 
     }
 
     @Override

@@ -16,26 +16,24 @@ public abstract class Person
     @CsvBindByPosition(position = 6)
     protected String email;
 
-    // Constructor
     public Person() {
-        super(); // Apelează constructorul clasei de bază, dacă este necesar
-        this.name = ""; // Inițializează cu un șir gol sau altă valoare implicată
-        this.phone = ""; // Poți folosi valori implicite care sunt sigure
-        this.email = ""; // Evită erorile de validare pentru valori nule
+        super();
+        this.name = "";
+        this.phone = "";
+        this.email = "";
     }
     public Person(String name, String phone, String email)
             throws InvalidPhoneNumberException, InvalidEmailFormatException {
         super();
         this.name = name;
-        setPhone(phone); // Use setter to validate, might throw InvalidPhoneNumberException
-        setEmail(email); // Use setter to validate, might throw InvalidEmailFormatException
+        setPhone(phone);
+        setEmail(email);
     }
 
     @Override
     public int compareTo(Person other) {
-        return this.name.compareTo(other.name); // Compară numele alfabetic
+        return this.name.compareTo(other.name);
     }
-    // Getters
     public String getName() {
         return name;
     }
@@ -48,7 +46,6 @@ public abstract class Person
         return email;
     }
 
-    // Setters
     public void setName(String name) {
         this.name = name;
     }

@@ -130,12 +130,10 @@ public class ClientMenu extends EntityMenu<Client> {
             return null;
         }
 
-        // Display all clients as options
         for (int i = 0; i < clients.size(); i++) {
             System.out.printf("%d. %s : %s\n", i + 1, clients.get(i).getName(), clients.get(i).getEmail());
         }
 
-        // Let the user select a client by their index
         System.out.print("Select a client (enter the number): ");
         int clientIndex;
         try {
