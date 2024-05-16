@@ -102,11 +102,11 @@ public class ScheduleService extends BaseService<RegularAppointment> {
                 final LocalDateTime startTime = start;
 
                 boolean isScheduledAppointmentOverlap = regularAppointments.stream()
-                        .filter(appointment -> appointment.getMedic().getId().equals(medic.getId()) && appointment.getStatus() == AppointmentStatus.SCHEDULED)
+                        .filter(appointment -> appointment.getMedicId().equals(medic.getId()) && appointment.getStatus() == AppointmentStatus.SCHEDULED)
                         .anyMatch(appointment -> appointment.getAppointmentDate().isEqual(startTime) || (appointment.getAppointmentDate().isAfter(startTime) && appointment.getAppointmentDate().isBefore(end)));
 
                 List<RegularAppointment> medicRegularAppointments = regularAppointments.stream()
-                        .filter(ra -> ra.getMedic().getId().equals(medic.getId()))
+                        .filter(ra -> ra.getMedicId().equals(medic.getId()))
                         .collect(Collectors.toList());
 
                 boolean isRegularAppointmentOverlap = overlapsWithRegularAppointment(start, medicRegularAppointments);

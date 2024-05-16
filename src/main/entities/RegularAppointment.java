@@ -12,8 +12,8 @@ public class RegularAppointment extends Appointment {
     private AppointmentFrequency frequency;
 
     // Constructor
-    public RegularAppointment(Client client, Medic medic, LocalDateTime appointmentDate, AppointmentStatus status, AppointmentFrequency frequency) {
-        super(client, medic, appointmentDate, status);
+    public RegularAppointment(String clientId, String medicId, LocalDateTime appointmentDate, AppointmentStatus status, AppointmentFrequency frequency) {
+        super(clientId, medicId, appointmentDate, status);
         this.frequency = frequency;
     }
 

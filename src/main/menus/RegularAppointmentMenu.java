@@ -91,7 +91,7 @@ public class RegularAppointmentMenu extends EntityMenu<RegularAppointment> {
             return;
         }
 
-        RegularAppointment appointment = new RegularAppointment(client.get(), medic.get(), appointmentDate, status, frequency);
+        RegularAppointment appointment = new RegularAppointment(client.get().getId(), medic.get().getId(), appointmentDate, status, frequency);
         try {
             service.add(appointment);
             System.out.println("Regular Appointment added successfully.");
@@ -102,64 +102,120 @@ public class RegularAppointmentMenu extends EntityMenu<RegularAppointment> {
 
     @Override
     protected void update() {
-        System.out.print("Enter Regular Appointment ID: ");
-        String id = scanner.nextLine();
-        Optional<RegularAppointment> optionalAppointment = service.getById(id);
-        if (optionalAppointment.isPresent()) {
-            RegularAppointment appointment = optionalAppointment.get();
-            System.out.println("Current details: " + appointment);
-
-            System.out.print("Enter new Appointment Date and Time (leave blank to keep current): ");
-            String appointmentDateInput = scanner.nextLine();
-            if (!appointmentDateInput.isEmpty()) {
-                LocalDateTime appointmentDate = LocalDateTime.parse(appointmentDateInput);
-                appointment.setAppointmentDate(appointmentDate);
-            }
-
-            System.out.print("Enter new Appointment Status (leave blank to keep current): ");
-            String statusInput = scanner.nextLine();
-            if (!statusInput.isEmpty()) {
-                try {
-                    AppointmentStatus status = AppointmentStatus.valueOf(statusInput.toUpperCase());
-                    appointment.setStatus(status);
-                } catch (IllegalArgumentException e) {
-                    System.out.println("Invalid status. Regular Appointment not updated.");
-                    return;
-                }
-            }
-
-            System.out.print("Enter new Appointment Frequency (leave blank to keep current): ");
-            String frequencyInput = scanner.nextLine();
-            if (!frequencyInput.isEmpty()) {
-                try {
-                    AppointmentFrequency frequency = AppointmentFrequency.valueOf(frequencyInput.toUpperCase());
-                    appointment.setFrequency(frequency);
-                } catch (IllegalArgumentException e) {
-                    System.out.println("Invalid frequency. Regular Appointment not updated.");
-                    return;
-                }
-            }
-
-            try {
-                service.update(appointment);
-                System.out.println("Regular Appointment updated successfully.");
-            } catch (NotFoundException e) {
-                System.out.println("Error: Regular Appointment not found.");
-            }
-        } else {
-            System.out.println("Regular Appointment not found.");
+        List<RegularAppointment> appointments = service.getAll();
+        if (appointments.isEmpty()) {
+            System.out.println("No regular appointments available to update.");
+            waitForUserInput();
+            return;
         }
+
+        // Display all regular appointments
+        for (int i = 0; i < appointments.size(); i++) {
+            System.out.printf("%d. %s\n", i + 1, appointments.get(i));
+        }
+
+        // Let the user select a regular appointment by its index
+        System.out.print("Select a regular appointment to update (enter the number): ");
+        int appointmentIndex;
+        try {
+            appointmentIndex = Integer.parseInt(scanner.nextLine()) - 1;
+            if (appointmentIndex < 0 || appointmentIndex >= appointments.size()) {
+                System.out.println("Invalid selection. Please try again.");
+                waitForUserInput();
+                return;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a valid number.");
+            waitForUserInput();
+            return;
+        }
+
+        RegularAppointment appointment = appointments.get(appointmentIndex);
+        System.out.println("Current details: " + appointment);
+
+        System.out.print("Enter new Appointment Date and Time (leave blank to keep current): ");
+        String appointmentDateInput = scanner.nextLine();
+        if (!appointmentDateInput.isEmpty()) {
+            LocalDateTime appointmentDate = LocalDateTime.parse(appointmentDateInput);
+            appointment.setAppointmentDate(appointmentDate);
+        }
+
+        System.out.print("Enter new Appointment Status (leave blank to keep current): ");
+        String statusInput = scanner.nextLine();
+        if (!statusInput.isEmpty()) {
+            try {
+                AppointmentStatus status = AppointmentStatus.valueOf(statusInput.toUpperCase());
+                appointment.setStatus(status);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid status. Regular Appointment not updated.");
+                waitForUserInput();
+                return;
+            }
+        }
+
+        System.out.print("Enter new Appointment Frequency (leave blank to keep current): ");
+        String frequencyInput = scanner.nextLine();
+        if (!frequencyInput.isEmpty()) {
+            try {
+                AppointmentFrequency frequency = AppointmentFrequency.valueOf(frequencyInput.toUpperCase());
+                appointment.setFrequency(frequency);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid frequency. Regular Appointment not updated.");
+                waitForUserInput();
+                return;
+            }
+        }
+
+        try {
+            service.update(appointment);
+            System.out.println("Regular Appointment updated successfully.");
+        } catch (NotFoundException e) {
+            System.out.println("Error: Regular Appointment not found.");
+        }
+
+        waitForUserInput();
     }
+
 
     @Override
     protected void delete() {
-        System.out.print("Enter Regular Appointment ID: ");
-        String id = scanner.nextLine();
+        List<RegularAppointment> appointments = service.getAll();
+        if (appointments.isEmpty()) {
+            System.out.println("No regular appointments available to delete.");
+            waitForUserInput();
+            return;
+        }
+
+        // Display all regular appointments
+        for (int i = 0; i < appointments.size(); i++) {
+            System.out.printf("%d. %s\n", i + 1, appointments.get(i));
+        }
+
+        // Let the user select a regular appointment by its index
+        System.out.print("Select a regular appointment to delete (enter the number): ");
+        int appointmentIndex;
         try {
-            service.delete(id);
+            appointmentIndex = Integer.parseInt(scanner.nextLine()) - 1;
+            if (appointmentIndex < 0 || appointmentIndex >= appointments.size()) {
+                System.out.println("Invalid selection. Please try again.");
+                waitForUserInput();
+                return;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a valid number.");
+            waitForUserInput();
+            return;
+        }
+
+        RegularAppointment appointment = appointments.get(appointmentIndex);
+        try {
+            service.delete(appointment.getId());
             System.out.println("Regular Appointment deleted successfully.");
         } catch (NotFoundException e) {
             System.out.println("Error: Regular Appointment not found.");
         }
+
+        waitForUserInput();
     }
+
 }

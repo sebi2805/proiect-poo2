@@ -32,7 +32,7 @@ public class MainMenu {
                     new RegularAppointmentMenu(regularAppointmentService).displayMenu();
                     break;
                 case 5:
-                    new OneTimeAppointmentMenu(oneTimeAppointmentService).displayMenu();
+                    new OneTimeAppointmentMenu(oneTimeAppointmentService, clientService, medicService).displayMenu();
                     break;
                 case 0:
                     System.exit(0);
@@ -43,7 +43,7 @@ public class MainMenu {
     }
 
     private static void printMainMenu() {
-        System.out.println("\nMain Menu:");
+        System.out.println("Main Menu:");
         System.out.println("1. Clients");
         System.out.println("2. Medics");
         System.out.println("3. Medical Records");

@@ -3,32 +3,37 @@ package main.entities;
 import java.time.LocalDateTime;
 
 import com.opencsv.bean.CsvBindByPosition;
+import com.opencsv.bean.CsvCustomBindByPosition;
 import main.enums.AppointmentStatus; // Import the enum if it's in a different package
+import main.util.LocalDateTimeConverter;
 
-public abstract class Appointment
-        extends BaseEntity
-        implements Comparable<Appointment> {
+public abstract class Appointment extends BaseEntity implements Comparable<Appointment> {
     @CsvBindByPosition(position = 4)
-    protected Client client;
+    private String clientId;
     @CsvBindByPosition(position = 5)
-    protected Medic medic;
-    @CsvBindByPosition(position = 6)
+    private String medicId;
+    @CsvCustomBindByPosition(position = 6, converter = LocalDateTimeConverter.class)
     protected LocalDateTime appointmentDate;
+
     @CsvBindByPosition(position = 7)
     protected AppointmentStatus status;
 
     // Constructor
-    public Appointment(Client client, Medic medic, LocalDateTime appointmentDate, AppointmentStatus status) {
+    public Appointment(String clientId, String medicId, LocalDateTime appointmentDate, AppointmentStatus status) {
         super();
-        this.client = client;
-        this.medic = medic;
+        this.clientId = clientId;
+        this.medicId = medicId;
         this.appointmentDate = appointmentDate;
         this.status = status;
     }
+    public Appointment(){
+        super();
+    }
     @Override
-    public int compareTo(Appointment other){
+    public int compareTo(Appointment other) {
         return this.appointmentDate.compareTo(other.appointmentDate);
     }
+
     // Getters and Setters
     public LocalDateTime getAppointmentDate() {
         return appointmentDate;
@@ -46,22 +51,33 @@ public abstract class Appointment
         this.status = status;
     }
 
-    public Client getClient() {
-        return client;
+    public String getClientId() {
+        return clientId;
     }
 
-    public void setClient(Client client) {
-        this.client = client;
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 
-    public Medic getMedic() {
-        return medic;
+    public String getMedicId() {
+        return medicId;
     }
 
-    public void setMedic(Medic medic) {
-        this.medic = medic;
+    public void setMedicId(String medicId) {
+        this.medicId = medicId;
     }
+
     // Abstract methods
     public abstract void confirmAppointment();
     public abstract void cancelAppointment();
+
+    // toString method
+    @Override
+    public String toString() {
+        return "Appointment ID: " + getId() + "\n" +
+                "Client ID: " + clientId + "\n" +
+                "Medic ID: " + medicId + "\n" +
+                "Appointment Date: " + appointmentDate + "\n" +
+                "Status: " + status;
+    }
 }

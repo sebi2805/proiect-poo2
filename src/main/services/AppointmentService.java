@@ -95,10 +95,10 @@ public class AppointmentService extends BaseService<Appointment> {
 
     public List<Appointment> getAppointmentsForClient(String clientId) {
         List<Appointment> oneTimeAppointments = fileService.getOneTimeAppointmentManager().findAll().stream()
-                .filter(appointment -> appointment.getClient().getId().equals(clientId))
+                .filter(appointment -> appointment.getClientId().equals(clientId))
                 .collect(Collectors.toList());
         List<Appointment> regularAppointments = fileService.getRegularAppointmentManager().findAll().stream()
-                .filter(appointment -> appointment.getClient().getId().equals(clientId))
+                .filter(appointment -> appointment.getClientId().equals(clientId))
                 .collect(Collectors.toList());
         oneTimeAppointments.addAll(regularAppointments);
         return oneTimeAppointments;
@@ -106,10 +106,10 @@ public class AppointmentService extends BaseService<Appointment> {
 
     public List<Appointment> getAppointmentsForMedic(String medicId) {
         List<Appointment> oneTimeAppointments = fileService.getOneTimeAppointmentManager().findAll().stream()
-                .filter(appointment -> appointment.getMedic().getId().equals(medicId))
+                .filter(appointment -> appointment.getMedicId().equals(medicId))
                 .collect(Collectors.toList());
         List<Appointment> regularAppointments = fileService.getRegularAppointmentManager().findAll().stream()
-                .filter(appointment -> appointment.getMedic().getId().equals(medicId))
+                .filter(appointment -> appointment.getMedicId().equals(medicId))
                 .collect(Collectors.toList());
         oneTimeAppointments.addAll(regularAppointments);
         return oneTimeAppointments;

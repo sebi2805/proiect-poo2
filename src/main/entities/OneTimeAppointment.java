@@ -5,10 +5,12 @@ import java.time.LocalDateTime;
 
 public class OneTimeAppointment extends Appointment {
     // Constructor
-    public OneTimeAppointment(Client client, Medic medic, LocalDateTime appointmentDate, AppointmentStatus status) {
-        super(client, medic, appointmentDate, status);
+    public OneTimeAppointment(String clientId, String medicId, LocalDateTime appointmentDate, AppointmentStatus status) {
+        super(clientId, medicId, appointmentDate, status);
     }
-
+    public OneTimeAppointment() {
+        super();
+    }
     // Implementing abstract methods from Appointment
     @Override
     public void confirmAppointment() {
@@ -20,5 +22,9 @@ public class OneTimeAppointment extends Appointment {
     public void cancelAppointment() {
         System.out.println("One-Time Appointment on " + appointmentDate + " cancelled.");
         // Additional logic specific to cancelling a one-time appointment can be added here
+    }
+    @Override
+    public String toString(){
+        return super.toString();
     }
 }
